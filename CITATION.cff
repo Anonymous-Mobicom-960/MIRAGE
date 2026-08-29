@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: >-
+  The associated paper is under double-blind review, so authorship and venue
+  metadata are intentionally withheld. Fill in the author, venue, year, DOI and
+  license fields once the review process concludes, and delete this note.
+title: >-
+  MIRAGE: Privacy-Preserving Full-Body Identity Replacement with Consent-Based
+  Restoration for Smart Glasses
+abstract: >-
+  Reference implementation of MIRAGE, a three-tier split-execution system for
+  full-body bystander privacy in smart-glasses video: fail-closed masking and
+  encryption inside the wearable capture boundary, pose-conditioned synthetic
+  human replacement driven only by identity-neutralised controls, and
+  consent-scoped restoration of an individual track mediated by a trusted
+  third party.
+type: software
+authors:
+  - name: "Anonymous (withheld for double-blind review)"
+# repository-code is intentionally omitted while the paper is under double-blind review:
+# any hosting URL identifies either the author or the institution. Restore it, alongside the
+# author, venue, year, DOI and license fields, once the review process concludes.
+license: "LicenseRef-Pending"
+keywords:
+  - bystander privacy
+  - smart glasses
+  - person re-identification
+  - gait anonymisation
+  - video anonymisation
+  - consent-based restoration
+preferred-citation:
+  type: conference-paper
+  title: >-
+    MIRAGE: Privacy-Preserving Full-Body Identity Replacement with
+    Consent-Based Restoration for Smart Glasses
+  authors:
+    - name: "Anonymous (withheld for double-blind review)"
+  year: 2027

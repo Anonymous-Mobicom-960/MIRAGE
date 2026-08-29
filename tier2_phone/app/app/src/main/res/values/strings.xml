@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MIRAGE NPU (Tier-2)</string>
+    <string name="grant_storage">Grant files</string>
+    <string name="run_pipeline">Run MIRAGE t2b3</string>
+</resources>

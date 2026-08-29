@@ -1,0 +1,109 @@
+{
+  "_meta": {
+    "paper": "MIRAGE: Privacy-Preserving Full-Body Identity Replacement with Consent-Based Restoration for Smart Glasses",
+    "units": "all rank accuracies and lifts in percent (pp)",
+    "tolerance_semantics": "a reproduction PASSES a value if |measured - value| <= tol. Tolerances reflect each pipeline's own run-to-run variability (deterministic scoring gets a tight tol; adversary retraining gets the published seed spread plus margin). A miss outside tol means the protocol, data or configuration differs and should be investigated, not averaged away.",
+    "chance_floors": "every chance floor is MEASURED by label permutation through the identical scoring pipeline, never assumed"
+  },
+
+  "capture_boundary": {
+    "reproducible_from_this_repo": false,
+    "reason": "the detection AP/AR ground truth (16,507 hand-verified frames) is not in this release; see docs/reproduction.md Gaps",
+    "reference_values": {
+      "detection_ap_iou50": 0.948,
+      "detection_ar_iou50": 0.976,
+      "person_coverage_sam2_pgt": 0.9848,
+      "skip_interval_n": 5
+    }
+  },
+
+  "appearance_reid": {
+    "target": "appearance_class12",
+    "protocol": {
+      "n_clips": 103,
+      "n_identities": 20,
+      "frame_budget": 70,
+      "gallery": "one clip per identity, condition- and collection-matched, source excluded, 12 redraws",
+      "tiebreak": "argsort (conservative for the defence)"
+    },
+    "class1_gei_nn": {
+      "chance_rank1": {"value": 11.10, "tol": 0.6},
+      "chance_rank5": {"value": 55.59, "tol": 1.5},
+      "arms": {
+        "raw":    {"paper_name": "Raw silhouette (positive control)", "rank1": {"value": 43.67, "tol": 2.0}, "rank5": {"value": 82.58, "tol": 2.5}},
+        "dp2":    {"paper_name": "DeepPrivacy2",                      "rank1": {"value": 42.76, "tol": 2.0}, "rank5": {"value": 81.90, "tol": 2.5}},
+        "mirage": {"paper_name": "MIRAGE bounding box",               "rank1": {"value": 17.42, "tol": 2.0}, "rank5": {"value": 64.93, "tol": 2.5}}
+      },
+      "headline": "MIRAGE removes 80.6 % of the Class 1 rank-1 lift; DeepPrivacy2 removes 2.8 %"
+    },
+    "class2_frozen_gaitbase": {
+      "chance_rank1": {"value": 11.12, "tol": 0.6},
+      "chance_rank5": {"value": 55.39, "tol": 1.5},
+      "arms": {
+        "raw":    {"paper_name": "Raw silhouette (positive control)", "rank1": {"value": 38.24, "tol": 2.0}, "rank5": {"value": 77.83, "tol": 2.5}},
+        "dp2":    {"paper_name": "DeepPrivacy2",                      "rank1": {"value": 37.10, "tol": 2.0}, "rank5": {"value": 76.70, "tol": 2.5}},
+        "mirage": {"paper_name": "MIRAGE bounding box",               "rank1": {"value": 10.86, "tol": 2.0}, "rank5": {"value": 54.98, "tol": 2.5}}
+      },
+      "headline": "MIRAGE sits at the measured chance floor (lift -0.27 pp); DeepPrivacy2 removes 4.2 % of the lift"
+    }
+  },
+
+  "gait_reid": {
+    "protocol": {
+      "dataset": "CASIA-B pose CSVs (GaitGraph release)",
+      "n_test_sequences": 5375,
+      "n_subjects": 50,
+      "identity_disjoint": true,
+      "seeding": "per sequence, never per identity",
+      "scoring": "protocol.reid_metrics, all-gallery, same-view exclusion, cell NM#5-6"
+    },
+    "class3_unlearned": {
+      "target": "gait_class3",
+      "chance_rank1": {"value": 1.93, "tol": 0.5},
+      "chance_rank5": {"value": 9.50, "tol": 1.0},
+      "arms": {
+        "RAW-control":      {"paper_name": "Raw poses (positive control)", "rank1": {"value": 37.18, "tol": 1.0}, "rank5": {"value": 64.02, "tol": 1.5}},
+        "qsize_m10_smooth": {"paper_name": "Quantized pose baseline",      "rank1": {"value": 4.43,  "tol": 1.0}, "rank5": {"value": 15.77, "tol": 1.5}},
+        "e2":               {"paper_name": "MIRAGE pose anonymiser",       "rank1": {"value": 3.78,  "tol": 1.0}, "rank5": {"value": 14.02, "tol": 1.5}}
+      },
+      "headline": "the anonymiser removes 94.8 % of the unlearned rank-1 lift"
+    },
+    "class4_adaptive": {
+      "target": "gait_class4",
+      "training": "ResGCN + SupCon, 100 epochs, retrained from scratch per arm, 3 seeds",
+      "chance_rank1": {"value": 1.93, "tol": 0.5},
+      "chance_rank5": {"value": 9.50, "tol": 1.0},
+      "arms": {
+        "RAW-control":      {"paper_name": "Raw poses (positive control)", "rank1": {"value": 90.25, "sd": 1.14, "tol": 3.5}, "rank5": {"value": 96.89, "sd": 0.72, "tol": 2.5}},
+        "qsize_m10_smooth": {"paper_name": "Quantized pose baseline",      "rank1": {"value": 27.31, "tol": 3.5},            "rank5": {"value": 57.16, "tol": 4.0}},
+        "e2":               {"paper_name": "MIRAGE pose anonymiser",       "rank1": {"value": 26.20, "sd": 0.57, "tol": 3.5}, "rank5": {"value": 58.06, "sd": 1.74, "tol": 4.0}}
+      },
+      "headline": "72.5 % of the adaptive adversary's rank-1 advantage removed; the residual is measured mitigation, not anonymisation"
+    }
+  },
+
+  "visual_utility": {
+    "target": "visual_utility",
+    "manual": true,
+    "requires": "re-rendering both arms on the capture corpus with matched seeds and settings",
+    "reference_values": {
+      "wan_baseline": {"ssim": 0.808, "ssim_sd": 0.009, "psnr_db": 16.128, "psnr_sd": 0.402, "lpips": 0.198, "lpips_sd": 0.008, "body_kp_dist": 0.015, "expression_mae": 0.023, "fid": 124.036},
+      "mirage":       {"ssim": 0.8119, "ssim_sd": 0.0076, "psnr_db": 14.947, "psnr_sd": 0.247, "lpips": 0.2318, "lpips_sd": 0.0092, "body_kp_dist": 0.0427, "expression_mae": 0.0677, "fid": 169.126},
+      "anatomical_artifact_rate_both_arms": 0.0,
+      "face_detection_rate_both_arms": 1.0
+    }
+  },
+
+  "system_cost": {
+    "target": "system_cost",
+    "manual": true,
+    "reference_values": {
+      "pi5_energy_per_10s_clip_J": {"idle": 59.87, "privacy": 159.5, "privacy_and_synthetic": 186.3},
+      "pi5_energy_multiplier": {"privacy": 2.66, "privacy_and_synthetic": 3.11},
+      "pi5_tail_latency_s": {"privacy": 10.68, "privacy_and_synthetic": 15.77},
+      "storage_overhead_vs_raw_at_q70": 0.933,
+      "crop_jpeg_q70": {"ssim": 0.9793, "psnr_db": 38.31, "kb_per_crop": 56.1},
+      "phone_s25_ultra_per_10s_clip": {"background_s": 262.5, "illumination_s": 25.9, "compositing_s": 27.0, "total_min": 5.26, "energy_J": 1488.9, "battery_fraction_5000mAh": 0.0215}
+    }
+  }
+}

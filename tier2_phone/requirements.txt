@@ -1,0 +1,9 @@
+# Tier 2 (phone) -- the off-device COMPANION SCRIPTS only.
+# The app itself is an Android/Kotlin project; see tier2_phone/README.md for its build.
+#
+# TESTED PLATFORM -- Windows 11, Python 3.10.11. The on-device measurements were taken on a
+# Samsung Galaxy S25 Ultra (Snapdragon 8 Elite, Hexagon NPU); the app's own toolchain is pinned
+# by tier2_phone/app/gradle/wrapper/gradle-wrapper.properties, not by this file.
+numpy==2.2.6
+opencv-python==4.11.0.86
+# ffmpeg must be on PATH (used for transcoding and for assembling the final clip).

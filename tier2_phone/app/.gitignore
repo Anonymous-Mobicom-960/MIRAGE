@@ -1,0 +1,22 @@
+# Android / Gradle build outputs
+*.iml
+.gradle/
+/local.properties
+/.idea/
+/build/
+/app/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+
+# NOTE: the Gradle wrapper (gradlew, gradlew.bat, gradle/wrapper/gradle-wrapper.jar) IS committed
+# in this public release, as Gradle recommends, so `./gradlew assembleDebug` works from a fresh
+# clone without a matching Gradle installation.
+
+# Compiled NPU model artifacts - DO NOT commit (they are large and are built by tools/aihub_compile.py)
+/app/src/main/assets/models/*.onnx
+/app/src/main/assets/models/*.bin
+/app/src/main/assets/models/*.so
+
+# Local model sources used only by the AI Hub compile step (public weights, but keep the repo light)
+tools/_models/

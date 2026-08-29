@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ============================================================================================
+         PRIVACY (V9_PLAN §2 / §9): THERE IS DELIBERATELY *NO* android.permission.INTERNET HERE.
+         With no INTERNET permission the OS blocks every socket the app could open, so the real
+         background (which is inside the frames this app reads/writes) CANNOT egress. Do NOT add
+         INTERNET, ACCESS_NETWORK_STATE, or any networking permission. If a future change needs one,
+         that is a trust-surface change requiring explicit sign-off (see README "Privacy").
+         All NPU compute is on-SoC (Hexagon HTP); nothing leaves the device.
+         ============================================================================================ -->
+
+    <!-- Access the SHARED "Project MIRAGE" folder (the same one the Termux flow uses) under
+         /sdcard/Download/. On API 30+ a normal app is sandboxed to its own dir; to read/write an
+         arbitrary shared folder we request All-Files-Access (MANAGE_EXTERNAL_STORAGE). The user
+         grants it once in Settings (the app opens that screen for them). See MainActivity. -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <!-- Legacy storage perms are ignored on API 33+, kept only for completeness / lower devices. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:extractNativeLibs="true"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MirageNpu"
+        tools:replace="android:extractNativeLibs"
+        tools:targetApi="31">
+
+        <!-- QNN/Hexagon NPU: expose the vendor FastRPC bridges so libQnnHtp.so can dlopen them at
+             QnnDevice_create (Android 12+ hides vendor .so's by default -> INVALID_CONFIG without these).
+             required=false so the app still installs/runs on devices without them (falls back to CPU). -->
+        <uses-native-library android:name="libcdsprpc.so" android:required="false" />
+        <uses-native-library android:name="libadsprpc.so" android:required="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

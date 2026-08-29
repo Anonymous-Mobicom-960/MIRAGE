@@ -1,0 +1,21 @@
+{
+ "torso_px_mean": 427.3,
+ "frames": 100,
+ "displacement_px_mean": {
+  "wrist": 91.5,
+  "elbow": 78.6,
+  "knee": null,
+  "ankle": null,
+  "shoulder": 32.7,
+  "hip": 3.5
+ },
+ "displacement_pct_of_torso": {
+  "wrist": 21.4,
+  "elbow": 18.4,
+  "knee": null,
+  "ankle": null,
+  "shoulder": 7.7,
+  "hip": 0.8
+ },
+ "all_joint_mean_px": 45.5
+}

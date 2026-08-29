@@ -1,0 +1,460 @@
+{
+ "clip": "46f59519-f00d-4eb3-a7b2-33fb3a9af901",
+ "source_clip": "<input>/clip_5s_10fps_1264.mp4",
+ "fps": 10.0,
+ "frames": 100,
+ "size": [
+  1264,
+  1264
+ ],
+ "slots": [
+  0
+ ],
+ "person_count": 1,
+ "emitted_slots": 1,
+ "config": {
+  "level": "L4",
+  "canon": true,
+  "conf_binarized": true,
+  "conf_binarize_thresh": 0.5,
+  "level_knobs": {
+   "cadence_amp": 0.0,
+   "angle_const_deg": 14,
+   "angle_drift_deg": 10,
+   "asymmetry_sigma": 0.12,
+   "lowfreq_amp_frac": 0.0,
+   "angle_groups": [
+    "uarm",
+    "farm"
+   ],
+   "projection_fit": true,
+   "limb_phase_amp": 1.8,
+   "cadence_root_lock": true,
+   "seeded_global_scale_max": 0.1,
+   "limb_swing_amp": 0.25,
+   "limb_phase_offset_s": 0.35
+  },
+  "gait_preset": "e2",
+  "gait_preset_is_shipped_default": true,
+  "pose_scale_from": "extent",
+  "head_anchor": "off",
+  "template_kinds": [
+   "anatomical_extent"
+  ],
+  "template_kind_counts": {
+   "anatomical_extent": 1
+  },
+  "seed_policy": "vendored_new_clip_seed_per_sequence",
+  "per_slot_present_frames": [
+   100
+  ],
+  "mask": {
+   "enabled": true,
+   "shape_mode": "bbox",
+   "temporal_win": 2,
+   "mask_fps": 10.0,
+   "temporal_win_s": 0.2,
+   "edge_expand_px": 1,
+   "edge_expand_kernel": "MORPH_ELLIPSE 3x3",
+   "simplify_eps": 0.01,
+   "bbox_merge": true,
+   "bbox_pad_frac": 0.0,
+   "route": "segmentation backend + MIRAGE bbox",
+   "order": [
+    "binarize",
+    "edge_expand_dilate",
+    "ring_buffer_append",
+    "mask_mitigate"
+   ],
+   "measured_arm_note": "\u00a7A.6o measured `bbox` THROUGH mask_mitigate at temporal win=2 on the MIRAGE host. The rectangle alone is not the measured arm, and no \u00a7A.6 number describes THIS host.",
+   "superset_violations": 0
+  },
+  "host": "mirage tier1 (groupmate clone) \u2014 NOT the MIRAGE edge host",
+  "privacy_note": "No privacy figure measured on the MIRAGE edge host describes this pipeline. See MASTER_EVAL_LEDGER.md sections G.1-G.7."
+ },
+ "tier1_host": "mirage tier1 (groupmate clone) \u2014 NOT the MIRAGE edge host",
+ "tier1_manifest_anon": {
+  "enabled": true,
+  "preset": "e2",
+  "preset_is_shipped_default": true,
+  "shipped_preset": "e2",
+  "preset_keys_raw": 9,
+  "level": "L4",
+  "fps": 10.0,
+  "anonymize_v2_kwargs": {
+   "cadence_amp": 0.0,
+   "angle_const_deg": 14,
+   "angle_drift_deg": 10,
+   "asymmetry_sigma": 0.12,
+   "lowfreq_amp_frac": 0.0,
+   "angle_groups": [
+    "uarm",
+    "farm"
+   ],
+   "projection_fit": true,
+   "limb_phase_amp": 1.8,
+   "cadence_root_lock": true,
+   "seeded_global_scale_max": 0.1,
+   "limb_swing_amp": 0.25,
+   "limb_phase_offset_s": 0.35
+  },
+  "anonymize_v2_kwargs_n": 12,
+  "wrapper_knobs": {
+   "scale_from": "extent"
+  },
+  "call_site_kwargs": {
+   "do_canon": true,
+   "center_root": false,
+   "fps": 10.0,
+   "head_anchor": "off"
+  },
+  "seconds_knobs_at_fps": {
+   "cadence_period_s": {
+    "seconds": 0.7,
+    "frames": 7.0,
+    "kind": "period",
+    "semantics": "gait-band period of the cadence warp",
+    "gated_by": "cadence_amp",
+    "gate_value": 0.0,
+    "active": false
+   },
+   "limb_phase_offset_s": {
+    "seconds": 0.35,
+    "frames": 3.5,
+    "kind": "bound",
+    "semantics": "per-chain constant time shift, drawn U[-v, +v] s per SEQUENCE",
+    "gated_by": "limb_phase_offset_s",
+    "gate_value": 0.35,
+    "active": true,
+    "applied_frames": "drawn within +/-3.5"
+   },
+   "limb_phase_period_s": {
+    "seconds": 0.7,
+    "frames": 7.0,
+    "kind": "period",
+    "semantics": "period of the per-limb phase warp",
+    "gated_by": "limb_phase_amp",
+    "gate_value": 1.8,
+    "active": true
+   },
+   "lowfreq_period_s": {
+    "seconds": 1.2,
+    "frames": 12.0,
+    "kind": "period",
+    "semantics": "period of the positional drift",
+    "gated_by": "lowfreq_amp_frac",
+    "gate_value": 0.0,
+    "active": false
+   },
+   "pose_smooth_max_s": {
+    "seconds": 0.0,
+    "frames": 0.0,
+    "kind": "bound",
+    "semantics": "temporal low-pass sigma, drawn U[0, v] s per SEQUENCE",
+    "gated_by": "pose_smooth_max_s",
+    "gate_value": 0.0,
+    "active": false,
+    "applied_frames": "drawn within [0, 0]"
+   },
+   "root_speed_period_s": {
+    "seconds": 2.5,
+    "frames": 25.0,
+    "kind": "period",
+    "semantics": "period of the walking-speed modulation",
+    "gated_by": "root_speed_amp",
+    "gate_value": 0.0,
+    "active": false
+   }
+  },
+  "levels_source": "vendored LEVELS[L4] after import-time env overrides",
+  "head_anchor_on": false,
+  "runtime": {
+   "defence": "gait",
+   "vendored_module": "<input>/pose_anon_edge.py",
+   "preset": "e2",
+   "preset_source": "argument",
+   "level": "L4",
+   "fps": 10.0,
+   "frame_wh": [
+    1264,
+    1264
+   ],
+   "n_slots": 1,
+   "n_frames": 100,
+   "conf_thresh": 0.5,
+   "min_present_frames": 4,
+   "min_present_frac": 0.0,
+   "max_coord_mult": 4.0,
+   "level_knobs": {
+    "cadence_amp": 0.6,
+    "angle_const_deg": 14,
+    "angle_drift_deg": 10,
+    "asymmetry_sigma": 0.12,
+    "lowfreq_amp_frac": 0.0
+   },
+   "preset_kwargs": {
+    "angle_groups": [
+     "uarm",
+     "farm"
+    ],
+    "projection_fit": true,
+    "limb_phase_amp": 1.8,
+    "cadence_amp": 0.0,
+    "scale_from": "extent",
+    "cadence_root_lock": true,
+    "seeded_global_scale_max": 0.1,
+    "limb_swing_amp": 0.25,
+    "limb_phase_offset_s": 0.35
+   },
+   "anonymize_v2_kwargs": {
+    "cadence_amp": 0.0,
+    "angle_const_deg": 14,
+    "angle_drift_deg": 10,
+    "asymmetry_sigma": 0.12,
+    "lowfreq_amp_frac": 0.0,
+    "angle_groups": [
+     "uarm",
+     "farm"
+    ],
+    "projection_fit": true,
+    "limb_phase_amp": 1.8,
+    "cadence_root_lock": true,
+    "seeded_global_scale_max": 0.1,
+    "limb_swing_amp": 0.25,
+    "limb_phase_offset_s": 0.35
+   },
+   "collapse_target_kwargs": {
+    "scale_from": "extent"
+   },
+   "seed_source": "vendored_new_clip_seed_per_sequence",
+   "deterministic_seed": false,
+   "provenance_globals": {
+    "template_kinds": "pose_anon_edge._TEMPLATE_KIND_USED",
+    "stature_scales": "pose_anon_edge._STATURE_SCALE_USED"
+   },
+   "on_degenerate": "raise",
+   "per_slot_present_frames": [
+    100
+   ],
+   "per_slot_absent_frames": [
+    0
+   ],
+   "per_slot_low_confidence_frames": [
+    0
+   ],
+   "sequences": [
+    {
+     "seq_id": 0,
+     "slot": 0,
+     "identity": 0,
+     "n_present": 100,
+     "first_frame": 0,
+     "last_frame": 99,
+     "n_gaps": 0,
+     "max_gap_frames": 0,
+     "min_group_len_px": 58.5382,
+     "group_lengths_px": {
+      "clav": 180.2937,
+      "face": 58.5382,
+      "farm": 144.9985,
+      "hip": 110.356,
+      "neck": 257.6941,
+      "shin": 90.9303,
+      "spine": 426.5521,
+      "thigh": 96.7201,
+      "uarm": 339.5116
+     },
+     "canvas_clipped_joints": 539,
+     "canvas_clipped_joints_confident": 47,
+     "input_joints_on_frame_edge_confident": 117,
+     "subject_cut_off_by_framing": true,
+     "canvas_clipped_frac": 0.317059,
+     "canvas_clipped_frac_confident": 0.027647
+    }
+   ],
+   "skipped": [],
+   "transformed_frames": 100,
+   "raw_passthrough_frames": 0,
+   "raw_passthrough_breakdown": {
+    "low_confidence_rows": 0,
+    "short_sequences": 0,
+    "degenerate_sequences": 0
+   },
+   "calls_to_anonymize_pose_log": 1,
+   "applied": true,
+   "output_bound_effective": false,
+   "output_bound_note": "coordinate sanity bound is DEAD: frame_wh was passed, so the vendored code clipped to the canvas (pose_anon_edge.py:2426) before this adapter saw the result. `degenerate_groups_checked` is the guard that held.",
+   "degenerate_groups_checked": 1,
+   "env_snapshot": {
+    "MIRAGE_GAIT_PRESET": "e2",
+    "MIRAGE_POSE_SCALE_FROM": null,
+    "MIRAGE_HEIGHT_MULT": null,
+    "MIRAGE_ARM_MULT": null,
+    "MIRAGE_LEG_MULT": null,
+    "MIRAGE_NECK_MULT": null,
+    "MIRAGE_STATURE_RATIO": null,
+    "MIRAGE_HEIGHT_ANCHOR": null,
+    "MIRAGE_HEAD_ANCHOR": null,
+    "MIRAGE_ANATOMICAL_TEMPLATE": null,
+    "MIRAGE_RESTORE_TORSO_ROLL": null,
+    "MIRAGE_LOWFREQ_AMP": null,
+    "MIRAGE_ANGLE_CONST": null,
+    "MIRAGE_ANGLE_DRIFT": null,
+    "MIRAGE_CADENCE_AMP": null,
+    "MIRAGE_CADENCE_PERIOD_S": null,
+    "MIRAGE_ASYM_SIGMA": null,
+    "MIRAGE_LR_ASYM_SIGMA": null,
+    "MIRAGE_LIMB_PHASE_AMP": null,
+    "MIRAGE_LIMB_PHASE_PERIOD_S": null,
+    "MIRAGE_TEST_FIXED_SEED_set": false
+   },
+   "template_kinds": [
+    "anatomical_extent"
+   ],
+   "stature_scales": [],
+   "canvas_clipped_joints": 539,
+   "canvas_clipped_joints_confident": 47,
+   "input_joints_on_frame_edge_confident": 117,
+   "min_group_len_px_over_sequences": 58.5382,
+   "canvas_clip_note": "joints whose INPUT was strictly inside frame_wh but whose emitted position sits exactly on a canvas edge, i.e. placed by the vendored clip (pose_anon_edge.py:2426) rather than by the transform. 0 on a clean sequence. A NON-ZERO count with a small `min_group_len_px` is the bone-length amplification signature that the median<=0 degeneracy guard cannot see -- see gait_anon._degenerate_groups for the measured table. Reported, never raised: a subject genuinely walking off the frame edge also produces some of these."
+  }
+ },
+ "tier1_manifest_mask": {
+  "enabled": true,
+  "shape_mode": "bbox",
+  "temporal_win": 2,
+  "mask_fps": 10.0,
+  "temporal_win_s": 0.2,
+  "edge_expand_px": 1,
+  "edge_expand_kernel": "MORPH_ELLIPSE 3x3",
+  "simplify_eps": 0.01,
+  "bbox_merge": true,
+  "bbox_pad_frac": 0.0,
+  "route": "segmentation backend + MIRAGE bbox",
+  "order": [
+   "binarize",
+   "edge_expand_dilate",
+   "ring_buffer_append",
+   "mask_mitigate"
+  ],
+  "measured_arm_note": "\u00a7A.6o measured `bbox` THROUGH mask_mitigate at temporal win=2 on the MIRAGE host. The rectangle alone is not the measured arm, and no \u00a7A.6 number describes THIS host.",
+  "runtime": {
+   "frames": 100,
+   "frames_none_as_empty": 0,
+   "frames_none_skipped_no_shape": 0,
+   "frames_empty_input": 0,
+   "window_resets": 0,
+   "s2_superset_violations": 0,
+   "s2_superset_violation_px": 0,
+   "s2_superset_violations_vs_dilated": 0,
+   "area_in_px": 31612328,
+   "area_out_px": 46941672,
+   "area_ratio_mean": 1.48063600165364,
+   "shape_mode": "bbox",
+   "temporal_win": 2,
+   "edge_expand_px": 1,
+   "simplify_eps": 0.01,
+   "bbox_merge": true,
+   "bbox_pad_frac": 0.0,
+   "seed_supplied_by_caller": false,
+   "host_superset_violation_frames": 0,
+   "host_superset_violation_px": 0
+  },
+  "superset_violations": 0
+ },
+ "adapter": {
+  "script": "_e2e/tier1_reid_20260814/npy_to_mirage_emit.py",
+  "role": "format ADAPTER: MIRAGE .npy -> MIRAGE pose.json/face_scalars.json",
+  "checks": {
+   "every_person_has_133_kp": true,
+   "face_block_23_90_all_zero": true,
+   "feet_block_17_22_all_zero": true,
+   "hand_block_91_132_all_zero": true,
+   "per_slot_counts_match_npy": true,
+   "absent_slot_frames_have_no_entry": true,
+   "agrees_with_tier1_manifest": true,
+   "face_scalars_shape": [
+    100,
+    1,
+    12
+   ],
+   "face_scalars_rows_match_pose_entries": true,
+   "face_scalars_positional_equals_slot_indexed": true
+  },
+  "per_slot": {
+   "0": {
+    "present_frames_npy": 100,
+    "person_entries_pose_json": 100,
+    "match": true,
+    "track_ids": [
+     0
+    ],
+    "conf_values_in_npy": [
+     0.0,
+     1.0
+    ],
+    "confident_joints": 1101,
+    "joints_scored_but_at_origin": 0,
+    "joints_zero_score_off_origin": 0
+   }
+  }
+ },
+ "mask_split": {
+  "frames": 100,
+  "clean_split_frames": 91,
+  "rule": "per-pixel nearest slot pose keypoint, per frame"
+ },
+ "mask_vscale": {
+  "factor": 1.0,
+  "down_frac": 1.0,
+  "applies_to": "mask_p{N}_00002.mp4 ONLY -- NOT mask_00002.mp4, NOT the plate, NOT the phone-side mask",
+  "owner_instruction": "increase the per-character cloud mask 20-25 % vertically (2026-08-16)",
+  "per_slot": {
+   "p1": {
+    "frames": 0,
+    "mean_height_before": 0.0,
+    "mean_height_after": 0.0,
+    "px_added": 0,
+    "frames_clipped_by_canvas": 0
+   }
+  }
+ },
+ "mask_extend_to_floor": {
+  "enabled": true,
+  "rule": "fill from the mask bottom to the canvas bottom, only under the columns the mask already occupies",
+  "per_slot": {
+   "p1": {
+    "frames": 41,
+    "px_added": 4251863
+   }
+  }
+ },
+ "reference_images": {
+  "producible_from_this_clip": false,
+  "what_they_are": "owner-supplied SYNTHETIC character sheets -- the REPLACEMENT identity WanAnimate paints into the hole. Not a crop of anybody in the footage; deriving one from the clip would put the real subject's appearance in the cloud upload.",
+  "present": [
+   "reference_p1_640.png"
+  ],
+  "provenance": {
+   "status": "CARRIED OVER -- NOT derived from this clip",
+   "from": "<input>/refs",
+   "owner_confirmation_required": true,
+   "slot_binding_evidence": {
+    "slot0->p1": [
+     "Male",
+     0.9823895564844156
+    ]
+   }
+  }
+ },
+ "streams": {
+  "masked_video_00002.mp4": "PLATE -- emitted mask filled 128 over the phone lightmap",
+  "mask_00002.mp4": "emitted UNION mask (Tier-1 mask.mp4, byte-identical)",
+  "light_map.mp4": "phone lightmap (bg_images)",
+  "mask_p{1,2}_00002.mp4": "per-slot masks, per-pixel nearest-pose split",
+  "pose_sticks_p{1,2}_00002.mp4": "anonymised skeleton on black (pose_images)",
+  "pose_sticks_both_00002.mp4": "both slots, reference only -- do not feed one render",
+  "facemesh_p{1,2}_00002.mp4": "shared synthetic canonical head on black (face_images)"
+ },
+ "note": "TWO-PERSON run through the MIRAGE Tier-1 host with BOTH MIRAGE defences on: gait preset 'e2' (level L4, the SHIPPED default, owner decision 2026-08-14) and silhouette shape_mode 'bbox' at temporal_win 2. Per-slot mask/sticks/facemesh are MANDATORY: with both graph mask loaders on the UNION mask the sampler generates a character in EVERY box and the cloud matte binds to the wrong one (0/140 frames, run3 B.57e). Each cloud render must be bound to ONE slot. PRIVACY: \ud83d\udd34 NO privacy number measured on the MIRAGE edge host describes THIS host. The e2 and bbox figures in the ledger (A.2x, A.6o) were measured on the MIRAGE edge pipeline; this run is the same CODE on a different host and carries no measured privacy figure of its own. See MASTER_EVAL_LEDGER.md G.1-G.7 and the P0 row in section P."
+}

@@ -1,0 +1,71 @@
+# Pylint configuration for MIRAGE.
+#
+# The CI job previously ran bare `pylint` over every tracked .py with no config, which produced
+# ~3,600 findings and had never once passed. Almost none of them were defects:
+#
+#   759  E1101 no-member        - false positives. cv2 is a C extension; pylint cannot introspect
+#                                 it, so every cv2.* call looked like a missing attribute.
+#   588  C0301 line-too-long    - style, against a default 100-char limit this repo does not use.
+#   434  C0103 invalid-name     - style. Research code uses maths names (n, x0, W, H, fps).
+#   374  C0321 multiple-statements, 283 C0116 missing-docstring, ... - all style.
+#
+# The point of the job is to catch real defects: undefined names, bad arguments, unreachable code.
+# So the error checks stay on and the opinions come off. This is not "make CI green" - a run that
+# fails on everything is indistinguishable from one that fails on something, which is exactly why
+# nobody could tell the job had never passed.
+
+[MAIN]
+# Vendored upstream code is not ours to restyle or fix.
+ignore-paths=^evaluation/privacy/silhouette/vendor/.*$,
+             ^evaluation/privacy/appearance/baselines_dp2/repo/.*$,
+             ^.*/external/.*$
+
+# C extensions pylint cannot introspect. Without this, every cv2.* member reads as missing.
+extension-pkg-allow-list=cv2
+
+# Third-party packages are not installed in CI (torch, onnxruntime and cv2 are large). Their
+# absence is not a code defect, so unresolved imports are not treated as one.
+ignored-modules=cv2,numpy,torch,onnxruntime,mediapipe,ultralytics,rtmlib,scipy,PIL,boto3,
+                botocore,requests,yaml,matplotlib,pandas,sklearn,tqdm,insightface,openpyxl,
+                qai_hub,google,google.genai,comfy,folder_paths,nodes,
+                ncnn,datasets,skimage,skimage.metrics,qai_hub_models
+
+# Attributes pylint cannot resolve on uninstalled libraries. Each was checked before adding:
+#   google.genai   - a namespace package; the import is correct.
+#   qai_hub        - submit_compile_job's return type cannot be inferred, so .get_target_model()
+#                    reads as a call on a list.
+#   rtmlib RTMPose - defines __call__, invisible with the package absent, so the instance reads
+#                    as not-callable.
+#   ncnn, datasets, skimage - same: uninstalled, so every member read as missing.
+#
+# 🔴 WHAT IS **NOT** SUPPRESSED, because it is real. With the noise gone the linter surfaced
+# genuine defects that had been buried since the job was added, e.g.
+#   evaluation/performance/pi_bench/bench_tier1_opt.py - uses HERE five times, never defines it;
+#                                                        the script raises NameError on line 10.
+#   tier1/src/mirage/export_tracking.py:179       - returns matched_slots, which is only
+#                                                        bound inside a different function.
+# These are reported, not silenced. Fix them rather than adding them here.
+
+jobs=0
+
+[MESSAGES CONTROL]
+# Keep every E (error) and the W checks that indicate real bugs. Disable the convention and
+# refactor categories: they are style judgements, and this is research code where a 14-local
+# function or a single-letter maths variable is the clearest way to write it.
+disable=C,R,
+        import-error,              # deps deliberately not installed in CI (see ignored-modules)
+        broad-exception-caught,    # deliberate throughout: a probe must not take a run down
+        fixme,                     # TODO/NOTE markers are used as working notes on purpose
+        unspecified-encoding,      # widespread; a real but separate cleanup
+        subprocess-run-check,      # return codes are inspected explicitly at these call sites
+        logging-fstring-interpolation,
+        f-string-without-interpolation,
+        unused-argument,
+        global-statement,
+        attribute-defined-outside-init
+
+[FORMAT]
+max-line-length=100
+
+[REPORTS]
+score=yes

@@ -1,0 +1,26 @@
+# Tier 1 -- on-device capture service (Raspberry Pi 5 prototype / any CPU host).
+# Torch-free by design: the whole tier runs on onnxruntime CPU + MediaPipe.
+#
+# TESTED PLATFORM -- Windows 11, Python 3.10.11, CPU only. These are the versions this tree is
+# currently verified against. The Raspberry Pi 5 runs a DIFFERENT stack and is pinned separately
+# in tier1/src/edge_runner_pi5/requirements.txt -- do not copy these pins onto the device.
+numpy==2.2.6
+opencv-python==4.11.0.86
+onnxruntime==1.22.1
+rtmlib==0.0.15         # RTMPose-Tiny / RTMPose wholebody runner
+mediapipe==0.10.18     # FaceLandmarker -> the 12 expression scalars.
+                       # PIN: last PyPI aarch64 (manylinux) wheel; needs Python <= 3.12.
+cryptography==49.0.0   # AES-128-GCM packets + RSA-4096 key wrapping
+requests==2.33.1       # fetches the Tier-3 TTP public key
+insightface==1.0.1     # genderage.onnx (apparent-gender flag)
+
+# --- optional, feature-gated (the shipped defaults do NOT need these) ---
+# opencv-contrib-python==4.11.0.86  # cv2.ximgproc.guidedFilter for the edge-aware mask upscale.
+#                         # Install EITHER opencv-python OR opencv-contrib-python, not both.
+# ncnn==1.0.20260526      # only for the NCNN YOLO11n backend (the Pi-5-canonical detector)
+# pycocotools             # only for the detection AP/AR evaluation
+
+# --- Tier-1 -> Tier-2 LAN handoff service (tier1/src/tier1_link) ---
+# fastapi
+# uvicorn
+# zeroconf

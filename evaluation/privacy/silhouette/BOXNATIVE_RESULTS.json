@@ -1,0 +1,106 @@
+{
+  "_meta": {
+    "features": [
+      "med_h",
+      "p90_h",
+      "med_w",
+      "sqrt_area",
+      "aspect",
+      "aspect_iqr",
+      "cv_h",
+      "cv_w",
+      "gait_hz",
+      "gait_pow",
+      "bob",
+      "drift"
+    ],
+    "scale_idx": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "reps": 40,
+    "n_clips": 103,
+    "n_identities": 20,
+    "scoring": "reid_modes.evaluate/metrics/bootstrap_ci, imported",
+    "gallery": "condition-matched, same-collection, one clip per identity, same-source excluded (R4)",
+    "null": "measured by label permutation through the identical pipeline"
+  },
+  "full": {
+    "raw": {
+      "rank1": 23.076923076923077,
+      "rank5": 67.87330316742081,
+      "ci95": [
+        18.057330827067673,
+        39.803675856307436
+      ],
+      "null_rank1": 11.145361990950226,
+      "null_rank5": 55.22530165912519,
+      "null_sem1": 0.06494458377633074,
+      "lift_rank1": 11.93156108597285,
+      "lift_rank5": 12.648001508295621,
+      "n_draws": 5304
+    },
+    "mirage": {
+      "rank1": 19.230769230769234,
+      "rank5": 65.61085972850678,
+      "ci95": [
+        14.510964912280702,
+        32.290204678362564
+      ],
+      "null_rank1": 11.120852187028657,
+      "null_rank5": 55.249340120663646,
+      "null_sem1": 0.06580098356032246,
+      "lift_rank1": 8.109917043740577,
+      "lift_rank5": 10.361519607843135,
+      "n_draws": 5304
+    },
+    "_removed_frac_rank1": 0.32029706881567477
+  },
+  "scalefree": {
+    "raw": {
+      "rank1": 18.099547511312217,
+      "rank5": 65.61085972850678,
+      "ci95": [
+        13.872076023391811,
+        30.941311612364235
+      ],
+      "null_rank1": 11.055335595776773,
+      "null_rank5": 55.420437405731526,
+      "null_sem1": 0.0737758116152841,
+      "lift_rank1": 7.044211915535444,
+      "lift_rank5": 10.190422322775255,
+      "n_draws": 5304
+    },
+    "mirage": {
+      "rank1": 14.479638009049776,
+      "rank5": 62.217194570135746,
+      "ci95": [
+        10.375626566416042,
+        20.706871345029235
+      ],
+      "null_rank1": 10.998774509803923,
+      "null_rank5": 55.40252639517346,
+      "null_sem1": 0.07528412837585569,
+      "lift_rank1": 3.480863499245853,
+      "lift_rank5": 6.814668174962286,
+      "n_draws": 5304
+    },
+    "_removed_frac_rank1": 0.5058548009367679
+  },
+  "per_feature_mirage_rank1": {
+    "med_h": 21.71945701357466,
+    "p90_h": 20.361990950226243,
+    "med_w": 17.420814479638008,
+    "sqrt_area": 16.515837104072396,
+    "aspect": 14.25339366515837,
+    "aspect_iqr": 11.990950226244344,
+    "cv_h": 11.538461538461538,
+    "cv_w": 14.93212669683258,
+    "gait_hz": 12.669683257918551,
+    "gait_pow": 10.407239819004525,
+    "bob": 11.312217194570136,
+    "drift": 13.34841628959276
+  }
+}

@@ -1,0 +1,26 @@
+# Raspberry Pi 5 (aarch64). Torch NOT required.
+#
+# TESTED PLATFORM -- Raspberry Pi 5 Model B Rev 1.1, Cortex-A76 x4 @ 2.4 GHz, 8 GB,
+# Debian 13 (trixie) / Python 3.13 / aarch64, governor `performance`.
+#
+# 🔴 THIS FILE IS DELIBERATELY NOT VERSION-PINNED, and that is a measured decision rather than an
+# oversight. The device resolves aarch64 wheels that the workstation never sees, so copying the
+# workstation pins (tier1/requirements.txt) here would pin versions that have never run on a Pi.
+# The one hard constraint below is real and already bites: at Python 3.13 there is NO mediapipe
+# aarch64 wheel, so the face-scalar path is unavailable on the benchmarked device and production
+# reuses the RTMPose head keypoints instead. Install the newest wheel your device resolves, and
+# treat any version claim about this file as unverified unless it was measured on the Pi.
+onnxruntime          # aarch64 CPU wheel (use int8 models). For XNNPACK/NNAPI tune threads.
+rtmlib               # RTMPose-t wholebody runner (pulls onnxruntime/opencv/numpy)
+mediapipe==0.10.18   # PIN: last PyPI aarch64 (manylinux) wheel; needs Python <= 3.12 (no cp313 wheel).
+                     # FaceMesh -> the 12 face scalars. If unavailable on the device, try 'mediapipe-rpi4'.
+opencv-python
+numpy
+
+# ---- OPTIONAL (only if you enable the corresponding feature; defaults do NOT need these) ----
+# opencv-contrib-python   # provides cv2.ximgproc.guidedFilter for edge-aware WORK_RES->native mask
+#                         # upscale. If absent, the code auto-falls back to cv2.resize(INTER_LINEAR).
+#                         # NOTE: install EITHER opencv-python OR opencv-contrib-python, not both
+#                         # (contrib is a superset - it also provides cv2). On the Pi5, prefer
+#                         # opencv-contrib-python if you want the guided mask edge.
+# ncnn                    # only if config.DETECT_BACKEND='ncnn' (YOLO11n int8 NCNN detector).

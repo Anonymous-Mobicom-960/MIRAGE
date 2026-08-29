@@ -1,0 +1,31 @@
+name: Pylint
+
+# Branches only. A bare `on: [push]` also fires on TAG pushes, which runs TODAY's workflow
+# against whatever tree the tag points at. `v0.17-qnn` predates both the MIRAGE rename and
+# the commit that gave this job a score floor, so pushing that tag scored 7.36/10 against a
+# 9.0 gate and left a permanent red X describing nothing about main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        # The project targets 3.10. The job used to run a 3.8/3.9/3.10 matrix, which lints the
+        # code against interpreters it is not written for and triples the runtime for no signal.
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+    - name: Analysing the code with pylint
+      # Configured by .pylintrc. Gates on a score floor; every finding is printed in the log.
+      # Runtime dependencies are deliberately not installed - see ignored-modules in .pylintrc.
+      run: |
+        pylint $(git ls-files "*.py") --fail-under=9.0

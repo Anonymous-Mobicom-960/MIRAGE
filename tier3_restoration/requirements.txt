@@ -1,0 +1,5 @@
+# Tier 3 -- consent-mediated restoration.
+# The envelope primitives live in tier1/src/mirage/encryption.py (Tier 1 mints them).
+#
+# TESTED PLATFORM -- Windows 11, Python 3.10.11.
+cryptography==49.0.0   # RSA-4096 OAEP unwrap + AES-128-GCM decrypt

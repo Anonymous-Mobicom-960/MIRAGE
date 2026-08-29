@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- MIRAGE dark palette (single source of truth for the UI) -->
+    <color name="bg">#0A0A0F</color>
+    <color name="surface">#15151E</color>
+    <color name="surface2">#1E1E2B</color>
+    <color name="stroke">#2C2C3C</color>
+
+    <color name="accent">#B9A8FF</color>       <!-- primary purple -->
+    <color name="accent_dim">#6E5AD8</color>
+    <color name="on_accent">#12101F</color>
+
+    <color name="text_primary">#ECEAF6</color>
+    <color name="text_secondary">#9AA0B4</color>
+    <color name="text_muted">#6C7284</color>
+
+    <!-- stage accents -->
+    <color name="tier1">#7FE6A6</color>        <!-- edge / green -->
+    <color name="phase1">#9BE7FF</color>       <!-- inpaint / cyan -->
+    <color name="phase1b">#FFE59B</color>      <!-- lightmap / amber -->
+    <color name="phase2">#FFD79B</color>       <!-- composite / orange -->
+    <color name="lime">#B7FF9B</color>          <!-- NPU gates / lime -->
+    <color name="compare">#D7C9FF</color>
+
+    <!-- collage tile bars -->
+    <color name="tile_in">#2A3550</color>
+    <color name="tile_out">#1E5631</color>
+
+    <!-- stage-state pills (rework 2026-08-08). One colour per state, used nowhere else, so a glance
+         at the pipeline page answers "what is done / runnable / blocked" without reading words. -->
+    <color name="state_done">#7FE6A6</color>     <!-- output exists on disk -->
+    <color name="state_ready">#9BE7FF</color>    <!-- every input present; Run will do work -->
+    <color name="state_blocked">#FF9B9B</color>  <!-- a named input is missing -->
+    <color name="state_queued">#6C7284</color>   <!-- an earlier stage has not produced its output -->
+
+    <!-- tab bar -->
+    <color name="tab_on">#B9A8FF</color>
+    <color name="tab_off">#6C7284</color>
+    <color name="tab_bar">#12121B</color>
+</resources>

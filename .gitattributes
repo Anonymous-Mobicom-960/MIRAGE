@@ -1,0 +1,15 @@
+# Byte-exact checkout, everywhere.
+#
+# tier1/tests/test_gait_mask_anon.py asserts that the vendored re-identification defence modules
+# hash to the SHA-256 digests recorded in tier1/src/mirage/vendor/mirage_edge/VENDOR.md - the same
+# bytes every published privacy number was measured against. Any line-ending normalisation silently
+# changes those digests and breaks the measurement -> source -> artifact provenance chain for
+# anyone who clones the repository.
+#
+# So: no text conversion at all. Files are checked out exactly as committed.
+* -text
+
+# Keep GitHub's language statistics honest about vendored and generated content.
+tier1/src/mirage/vendor/** linguist-vendored
+workflows/tier2_cloud/*.json    linguist-generated
+examples/**                     linguist-documentation

@@ -1,0 +1,42 @@
+name: Tests
+
+# The parity suite is the gate that matters here. Twice, a reported arm and the committed arm
+# diverged in silence -- the angle knob measured at 14/10 while the source said 20/15, and a gait
+# preset approved as one mechanism shipping with another. Both were caught by luck. This job runs
+# the checks that would have caught them.
+
+# Branches only. A bare `on: [push]` also fires on TAG pushes, which runs TODAY's workflow
+# against whatever tree the tag points at. `v0.17-qnn` predates both the MIRAGE rename and
+# the commit that gave this job a score floor, so pushing that tag scored 7.36/10 against a
+# 9.0 gate and left a permanent red X describing nothing about main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      # Verified against a clean virtualenv holding exactly this set, not inferred:
+      #   numpy, opencv   - the mask defence
+      #   onnxruntime     - mirage_tier1 imports it at module level (this is what broke the first
+      #                     run of this job; it was installed on the workstation and invisible)
+      #   Pillow          - the egress guard's fixtures
+      # torch is deliberately NOT here. The guard test stubs it, because the node's only torch
+      # call sits in a function the test never reaches, and a ~200 MB wheel for an unused import
+      # is waste. No models, no GPU, no dataset, no real footage.
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy "opencv-python-headless<5" pytest onnxruntime Pillow
+    - name: Shipped-config parity and golden vectors
+      run: python tier1/tests/test_shipped_parity.py
+    - name: Cloud egress guard
+      # Asserts that the only images the AutoRef node can upload to a third-party API are grey
+      # silhouettes, and that no NEW upload path can be added without a guard.
+      run: python tier2_cloud/src/comfyui_custom_nodes/test_egress_guard.py

@@ -1,0 +1,174 @@
+{
+ "clip_id": "46f59519-f00d-4eb3-a7b2-33fb3a9af901",
+ "generated_by": "mirage.pipeline.process_video",
+ "PRIVACY": null,
+ "note": "Every MIRAGE privacy figure referenced by this code was measured on the MIRAGE edge host, not on this pipeline. This file names code and configuration only.",
+ "config": {
+  "schema": "mirage_defence_provenance/1",
+  "host": "mirage tier1 (groupmate clone) \u2014 NOT the MIRAGE edge host",
+  "gait": {
+   "enabled": true,
+   "preset": "e2",
+   "preset_is_shipped_default": true,
+   "shipped_preset": "e2",
+   "preset_keys_raw": 9,
+   "level": "L4",
+   "fps": 10.0,
+   "anonymize_v2_kwargs": {
+    "cadence_amp": 0.0,
+    "angle_const_deg": 14,
+    "angle_drift_deg": 10,
+    "asymmetry_sigma": 0.12,
+    "lowfreq_amp_frac": 0.0,
+    "angle_groups": [
+     "uarm",
+     "farm"
+    ],
+    "projection_fit": true,
+    "limb_phase_amp": 1.8,
+    "cadence_root_lock": true,
+    "seeded_global_scale_max": 0.1,
+    "limb_swing_amp": 0.25,
+    "limb_phase_offset_s": 0.35
+   },
+   "anonymize_v2_kwargs_n": 12,
+   "wrapper_knobs": {
+    "scale_from": "extent"
+   },
+   "call_site_kwargs": {
+    "do_canon": true,
+    "center_root": false,
+    "fps": 10.0,
+    "head_anchor": "off"
+   },
+   "seconds_knobs_at_fps": {
+    "cadence_period_s": {
+     "seconds": 0.7,
+     "frames": 7.0,
+     "kind": "period",
+     "semantics": "gait-band period of the cadence warp",
+     "gated_by": "cadence_amp",
+     "gate_value": 0.0,
+     "active": false
+    },
+    "limb_phase_offset_s": {
+     "seconds": 0.35,
+     "frames": 3.5,
+     "kind": "bound",
+     "semantics": "per-chain constant time shift, drawn U[-v, +v] s per SEQUENCE",
+     "gated_by": "limb_phase_offset_s",
+     "gate_value": 0.35,
+     "active": true,
+     "applied_frames": "drawn within +/-3.5"
+    },
+    "limb_phase_period_s": {
+     "seconds": 0.7,
+     "frames": 7.0,
+     "kind": "period",
+     "semantics": "period of the per-limb phase warp",
+     "gated_by": "limb_phase_amp",
+     "gate_value": 1.8,
+     "active": true
+    },
+    "lowfreq_period_s": {
+     "seconds": 1.2,
+     "frames": 12.0,
+     "kind": "period",
+     "semantics": "period of the positional drift",
+     "gated_by": "lowfreq_amp_frac",
+     "gate_value": 0.0,
+     "active": false
+    },
+    "pose_smooth_max_s": {
+     "seconds": 0.0,
+     "frames": 0.0,
+     "kind": "bound",
+     "semantics": "temporal low-pass sigma, drawn U[0, v] s per SEQUENCE",
+     "gated_by": "pose_smooth_max_s",
+     "gate_value": 0.0,
+     "active": false,
+     "applied_frames": "drawn within [0, 0]"
+    },
+    "root_speed_period_s": {
+     "seconds": 2.5,
+     "frames": 25.0,
+     "kind": "period",
+     "semantics": "period of the walking-speed modulation",
+     "gated_by": "root_speed_amp",
+     "gate_value": 0.0,
+     "active": false
+    }
+   },
+   "levels_source": "vendored LEVELS[L4] after import-time env overrides",
+   "head_anchor_on": false
+  },
+  "mask": {
+   "enabled": true,
+   "shape_mode": "bbox",
+   "temporal_win": 2,
+   "mask_fps": 10.0,
+   "temporal_win_s": 0.2,
+   "edge_expand_px": 1,
+   "edge_expand_kernel": "MORPH_ELLIPSE 3x3",
+   "simplify_eps": 0.01,
+   "bbox_merge": true,
+   "bbox_pad_frac": 0.0,
+   "route": "segmentation backend + MIRAGE bbox",
+   "order": [
+    "binarize",
+    "edge_expand_dilate",
+    "ring_buffer_append",
+    "mask_mitigate"
+   ],
+   "measured_arm_note": "\u00a7A.6o measured `bbox` THROUGH mask_mitigate at temporal win=2 on the MIRAGE host. The rectangle alone is not the measured arm, and no \u00a7A.6 number describes THIS host."
+  },
+  "export": {
+   "binarize_thresh": 0.5,
+   "export_people": 1,
+   "dense_export_forced": true
+  },
+  "test_artifact": false,
+  "test_artifact_cause": null,
+  "env_overrides": {},
+  "vendor": {
+   "pose_anon_edge.py": {
+    "status": "ok",
+    "sha256": "85a9c5989c6b1df2f79c7d4c8556914e1ba5b122bbf19daf5912d22bad89c8d8",
+    "bytes": 160571,
+    "path": "<input>/pose_anon_edge.py"
+   },
+   "person_slots.py": {
+    "status": "ok",
+    "sha256": "d4f768822aeb4415ff91655d37a53d25c81afb1f5e5ecdce66295ddb5afa9617",
+    "bytes": 13068,
+    "path": "<input>/person_slots.py"
+   },
+   "mask_shape.py": {
+    "status": "ok",
+    "sha256": "c59b90de3f6af84c2710d46afa5f15be30e1d90293f4e19b1465b173718eac6b",
+    "bytes": 59515,
+    "path": "<input>/mask_shape.py"
+   },
+   "_source": {
+    "mask_shape": "package",
+    "pose_anon_edge": "package"
+   },
+   "_complete": true
+  },
+  "warnings": [],
+  "extra": {
+   "host": "mirage.pipeline.process_video",
+   "anonymizer": "yoloseg11",
+   "seg_skip_n": 1,
+   "dense_export": true,
+   "export_enabled": true,
+   "score_binarize": true,
+   "score_binarize_source": "follows gait_anon",
+   "mask_temporal_win_source": "explicit/pinned (mask_temporal_win / --mask-temporal-win)",
+   "mask_emit_fps_note": "one ring-buffer entry per EMITTED frame; this pipeline emits a mask every frame (skip frames carry a warped mask), so emitted-mask fps == clip fps",
+   "gait_on_degenerate": "raise",
+   "gait_seed_policy": "vendored per-SEQUENCE draw, re-drawn on every flush (gait_pin_run_seed=False)"
+  },
+  "digest": "637e3646906faf824f1dadefccf0a6af7b3d2641b064c5c5f068aecab1172c91"
+ }
+}

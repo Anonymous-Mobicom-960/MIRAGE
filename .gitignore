@@ -1,0 +1,117 @@
+# ---------------------------------------------------------------- Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------- environments
+.venv/
+venv/
+env/
+.python-version
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.keystore
+credentials.json
+service-account*.json
+
+# ---------------------------------------------------------------- model weights
+# Weights are NOT redistributed here; see models/README.md for provenance and
+# download instructions. Keep them out of the repository.
+*.onnx
+*.onnx.data
+*.pt
+*.pth
+*.tflite
+*.safetensors
+*.gguf
+*.bin
+*.task
+*.ncnn.param
+models/*
+!models/README.md
+tier1/src/edge_runner_pi5/models/
+tier2_phone/app/app/src/main/assets/models/*
+!tier2_phone/app/app/src/main/assets/models/MODELS_README.txt
+
+# ---------------------------------------------------------------- datasets & captures
+# Capture footage shows real people and is never redistributed.
+evaluation/**/data/
+evaluation/**/vendor/
+examples/inputs/*
+!examples/inputs/README.md
+*.mkv
+*.avi
+*.mov
+*.7z
+*.rar
+*.zip
+
+# Videos: the repository ships demonstrations as GIFs under assets/gifs/ only.
+*.mp4
+!assets/**/*.mp4
+
+# ---------------------------------------------------------------- run outputs
+/outputs/
+/out/
+/runs/
+_scratch/
+*.log
+*.jsonl
+*.csv
+!evaluation/**/*.csv
+
+# ---------------------------------------------------------------- Android
+.gradle/
+local.properties
+*.apk
+*.aab
+*.iml
+captures/
+.cxx/
+tier2_phone/app/app/build/
+tier2_phone/app/.kotlin/
+
+# ---------------------------------------------------------------- editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+*.swp
+*.bak
+*.orig
+
+# ---------------------------------------------------------------- appearance re-ID harness
+# Everything below is either derived from the evaluation dataset (which shows real people and is
+# distributed separately) or a large third-party binary. Only the harness code is committed.
+evaluation/privacy/appearance/corpus_10fps/
+evaluation/privacy/appearance/arms/
+evaluation/privacy/appearance/cache/
+evaluation/privacy/appearance/manifests/
+evaluation/privacy/appearance/models/
+evaluation/privacy/appearance/reports/
+evaluation/privacy/appearance/baselines_dp2/out/
+evaluation/privacy/appearance/baselines_dp2/repo/
+evaluation/privacy/appearance/baselines_dp2/torch_home/
+evaluation/privacy/appearance/baselines_dp2/logs/
+*.npz
+
+# Reproduction artifacts are per-user run outputs.
+reproduce/REPRODUCTION_REPORT.md
+
+# Build logs are local artefacts, not release content (they also leak local paths).
+build.err
+build.log
+qnn_build.err
+qnn_build.log

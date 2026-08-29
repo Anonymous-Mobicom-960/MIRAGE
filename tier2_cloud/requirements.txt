@@ -1,0 +1,24 @@
+# Tier 2 (cloud).
+#
+# SERVER SIDE -- the MIRAGE ComfyUI custom nodes run inside a ComfyUI installation and inherit
+# its environment (torch, torchvision, ...). Install ComfyUI's own requirements first, then:
+#
+# TESTED PLATFORM -- the rendered arms were produced on RunPod A100 / H100 pods running the
+# ComfyUI image's own CUDA stack, so `torch` is whatever that image ships and is deliberately
+# NOT pinned here: pinning it would fight ComfyUI's installer. The remaining pins are the
+# versions this tree is verified against (Windows 11, Python 3.10.11) and are what the
+# client-side tooling under tier2_cloud/scripts/ actually runs on.
+torch                        # provided by ComfyUI; listed so the node set is self-describing.
+                             # Intentionally unpinned -- see the note above.
+numpy==2.2.6
+opencv-python==4.11.0.86
+onnxruntime==1.22.1
+mediapipe==0.10.18
+rtmlib==0.0.15
+Pillow==12.3.0
+# openai               # ONLY for the optional silhouette-only auto-reference node
+#                      # (MIRAGE_GeminiAutoRef, provider="openai"). Not needed for the manual-
+#                      # reference path, which is what the reported runs used.
+
+# CLIENT SIDE -- the bundle/queue tooling under tier2_cloud/scripts/ needs only:
+#   numpy, opencv-python  (+ ffmpeg on PATH)

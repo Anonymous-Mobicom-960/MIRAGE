@@ -1,0 +1,103 @@
+{
+ "source": "clip_10s_10fps_1264.mp4",
+ "frames": 100,
+ "auto_gray": 124,
+ "tol": 5,
+ "positive_control_raw_source": {
+  "frames_with_a_face_mediapipe": 100,
+  "frames_with_a_face_yunet": 100,
+  "face_h_px_median_mp": 189.0
+ },
+ "faces_found_in_EMITTED": {
+  "frames_with_a_face_mediapipe": 0,
+  "frames_with_a_face_yunet": 0
+ },
+ "ungrey_mediapipe": {
+  "gt_faces_scored": 100,
+  "mean_ungrey": 0.01609,
+  "max_ungrey": 0.2436,
+  "reveals_gt_5pct": 9,
+  "severe_gt_50pct": 0,
+  "worst": [
+   {
+    "frame": 91,
+    "det": "mediapipe",
+    "h": 188,
+    "score": 0.896,
+    "ungrey": 0.2436
+   },
+   {
+    "frame": 88,
+    "det": "mediapipe",
+    "h": 171,
+    "score": 0.901,
+    "ungrey": 0.2273
+   },
+   {
+    "frame": 92,
+    "det": "mediapipe",
+    "h": 183,
+    "score": 0.836,
+    "ungrey": 0.2101
+   },
+   {
+    "frame": 90,
+    "det": "mediapipe",
+    "h": 163,
+    "score": 0.825,
+    "ungrey": 0.1995
+   },
+   {
+    "frame": 89,
+    "det": "mediapipe",
+    "h": 163,
+    "score": 0.928,
+    "ungrey": 0.1865
+   }
+  ]
+ },
+ "ungrey_yunet": {
+  "gt_faces_scored": 115,
+  "mean_ungrey": 0.00246,
+  "max_ungrey": 0.1071,
+  "reveals_gt_5pct": 2,
+  "severe_gt_50pct": 0,
+  "worst": [
+   {
+    "frame": 84,
+    "det": "yunet",
+    "h": 28,
+    "score": 0.876,
+    "ungrey": 0.1071
+   },
+   {
+    "frame": 85,
+    "det": "yunet",
+    "h": 27,
+    "score": 0.884,
+    "ungrey": 0.0556
+   },
+   {
+    "frame": 89,
+    "det": "yunet",
+    "h": 26,
+    "score": 0.898,
+    "ungrey": 0.0311
+   },
+   {
+    "frame": 91,
+    "det": "yunet",
+    "h": 26,
+    "score": 0.852,
+    "ungrey": 0.0192
+   },
+   {
+    "frame": 91,
+    "det": "yunet",
+    "h": 222,
+    "score": 0.916,
+    "ungrey": 0.0171
+   }
+  ]
+ }
+}

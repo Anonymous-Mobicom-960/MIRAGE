@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="PhaseCard">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@drawable/card_bg</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:layout_marginTop">9dp</item>
+        <item name="android:layout_marginHorizontal">2dp</item>
+    </style>
+
+    <style name="PhaseTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:paddingBottom">1dp</item>
+    </style>
+
+    <style name="PhaseHint">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:lineSpacingExtra">1.5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+    </style>
+
+    <!-- One input|output collage per phase: full width, aspect-preserved, capped height, tap-to-play. -->
+    <style name="Collage">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:maxHeight">210dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">2dp</item>
+        <item name="android:background">@drawable/tile_bg</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="BtnRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingTop">4dp</item>
+    </style>
+
+    <style name="BtnSmall">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginHorizontal">3dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:insetTop">2dp</item>
+        <item name="android:insetBottom">2dp</item>
+    </style>
+
+    <!-- Prominent full-width primary action (accent-filled). -->
+    <style name="BtnPrimary" parent="Widget.Material3.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:backgroundTint">@color/accent</item>
+        <item name="android:textColor">@color/on_accent</item>
+        <item name="iconTint">@color/on_accent</item>
+    </style>
+
+    <!-- Secondary / de-emphasised action (outlined). -->
+    <style name="BtnGhost" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginHorizontal">3dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:insetTop">2dp</item>
+        <item name="android:insetBottom">2dp</item>
+    </style>
+
+    <style name="FpsLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:paddingHorizontal">4dp</item>
+    </style>
+
+
+    <!-- ═══ rework 2026-08-08 ═══ -->
+
+    <!-- One tab of the fixed tab bar. Deliberately a plain TextView, not a Material TabLayout tab:
+         a TabLayout generates its tabs at run time WITHOUT per-tab resource-ids, so `uiautomator`
+         automation would have to select a page by matching visible TEXT. Every tab here has a
+         permanent id (tabTier1 / tabTier2 / tabResult / tabTools) that a driver can bind forever. -->
+    <style name="TabItem">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.03</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+
+    <!-- A whole page. Exactly one is VISIBLE at a time; the rest are GONE, which is also why they
+         leave the accessibility tree - see _e2e/uiContract.json for which id lives where. -->
+    <style name="Page">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingHorizontal">8dp</item>
+        <item name="android:scrollbarThumbVertical">@color/stroke</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
+
+    <style name="PageInner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingBottom">14dp</item>
+    </style>
+
+    <!-- The stage-state pill: DONE / READY / BLOCKED · reason / QUEUED. Full width so a long
+         "blocked because…" reason is readable rather than ellipsized into uselessness. -->
+    <style name="StatePill">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:paddingTop">1dp</item>
+        <item name="android:paddingBottom">3dp</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textColor">@color/state_queued</item>
+    </style>
+
+    <!-- Section heading INSIDE a page (not a card) - used for the page's own title line. -->
+    <style name="PageTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textColor">@color/text_muted</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingHorizontal">5dp</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <!-- Compact monospace result/status line under a card. Small, dim, never the focus, but always
+         present so a phase's last measurement is visible without scrolling the terminal. -->
+    <style name="StatLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textColor">@color/text_muted</item>
+        <item name="android:lineSpacingExtra">1dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingHorizontal">3dp</item>
+    </style>
+</resources>

@@ -1,0 +1,32 @@
+name: Android build
+
+# Removing a pipeline stage once broke the app -- shared helpers went out with the file that
+# happened to hold them -- and nothing caught it, because the only CI here was a Python lint.
+# This job compiles the phone tier on every push so a Kotlin regression cannot reach main again.
+
+# Branches only. A bare `on: [push]` also fires on TAG pushes, which runs TODAY's workflow
+# against whatever tree the tag points at. `v0.17-qnn` predates both the MIRAGE rename and
+# the commit that gave this job a score floor, so pushing that tag scored 7.36/10 against a
+# 9.0 gate and left a permanent red X describing nothing about main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "17"
+    - name: Assemble (QNN flavour)
+      # -Pmirage.enableOrt=true is REQUIRED: the default resolves ONNX Runtime 1.22.0, which lacks
+      # the EP-registration API OrtRunner uses, and does not compile. See tier2_phone/INSTALL.md.
+      working-directory: tier2_phone/app
+      run: |
+        chmod +x ./gradlew
+        ./gradlew assembleDebug -Pmirage.enableOrt=true --no-daemon --console=plain

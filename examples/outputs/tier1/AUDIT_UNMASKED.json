@@ -1,0 +1,12 @@
+{
+ "source": "clip_10s_10fps_1264.mp4",
+ "mask": "mask.mp4",
+ "frames": 100,
+ "person_detections": 118,
+ "cover_min": 0.5,
+ "coverage_mean": 0.9919,
+ "coverage_min": 0.9076,
+ "uncovered_detections": 0,
+ "uncovered_frames": 0,
+ "uncovered": []
+}

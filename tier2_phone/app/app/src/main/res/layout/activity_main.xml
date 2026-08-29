@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MIRAGE Tier-2 - FULL UI REWORK 2026-08-08 (was: one long ScrollView of cards, 2026-08-04).
+
+  WHY IT IS SHAPED LIKE THIS. The app is driven both by a human and, for every real run, by UI
+  AUTOMATION over adb (`_e2e/cloud_a20_20260801/drive_phone.py` does `uiautomator dump`, finds a node
+  by resource-id and taps the centre of its bounds). A view that is not in the accessibility tree does
+  not exist as far as that driver is concerned - which is exactly how a production run died on
+  2026-08-08 (§C.PHONE-12: `p2run` sat inside a collapsed section, so no amount of scrolling found it).
+
+  So the tree obeys four rules:
+
+   1. EVERY AUTOMATION-CRITICAL CONTROL THAT IS NOT A RUN BUTTON LIVES IN THE FIXED CHROME.
+      `npuToggle` is in the header, the terminal + progress + phase label are in the footer. They are
+      in the tree on every page at every scroll position, so no driver has to navigate to reach them.
+   2. THE THREE RUN BUTTONS (p1run · p1brun · p2run) ALL LIVE ON ONE PAGE - `pageTier2` - AND
+      THAT PAGE IS SELECTED AT LAUNCH. Worst case a driver taps one tab with a permanent id.
+   3. EVERY PAGE HAS A STABLE RESOURCE-ID, and so does its tab. `_e2e/uiContract.json` maps every
+      automation id to its page; `drive_phone.select_page()` reads it.
+   4. Nothing can overlap and no label can wrap: the tree is nested LinearLayout, every button row
+      splits the width with equal weights, every label is short + maxLines-capped.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="false">
+
+    <!-- ══════════════ HEADER (fixed · always in the accessibility tree) ══════════════ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/surface"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MIRAGE"
+                android:textColor="@color/accent"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:letterSpacing="0.16"
+                android:maxLines="1" />
+            <TextView
+                android:id="@+id/readyChip"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="10dp"
+                android:paddingEnd="6dp"
+                android:text="checking…"
+                android:textColor="@color/text_muted"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:maxLines="1"
+                android:ellipsize="end" />
+            <!-- IN THE HEADER ON PURPOSE. `npuToggle` is one of the five ids the adb driver binds and
+                 the one it touches before it knows which page it is on. Here it is reachable from
+                 every page without navigating - one whole class of automation failure removed rather
+                 than worked around. -->
+            <CheckBox android:id="@+id/npuToggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="40dp"
+                android:minWidth="0dp"
+                android:text="NPU"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:maxLines="1" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/engineChip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="engine: resolving…"
+            android:textColor="@color/text_secondary"
+            android:textSize="10sp"
+            android:fontFamily="monospace"
+            android:paddingBottom="2dp"
+            android:maxLines="2"
+            android:ellipsize="end" />
+    </LinearLayout>
+
+    <!-- ══════════════ TAB BAR (fixed · always in the tree) ══════════════
+         Plain TextViews, not a Material TabLayout: TabLayout builds its tabs at run time with NO
+         per-tab resource-id, so automation would have to select a page by matching visible text. -->
+    <LinearLayout
+        android:id="@+id/tabBar"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:background="@color/tab_bar">
+        <TextView android:id="@+id/tabTier1" style="@style/TabItem" android:text="TIER-1" />
+        <TextView android:id="@+id/tabTier2" style="@style/TabItem" android:text="TIER-2" />
+        <TextView android:id="@+id/tabResult" style="@style/TabItem" android:text="RESULT" />
+        <TextView android:id="@+id/tabTools" style="@style/TabItem" android:text="TOOLS" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/stroke" />
+
+    <!-- ══════════════ PAGE HOST - exactly one child VISIBLE, the rest GONE ══════════════ -->
+    <FrameLayout
+        android:id="@+id/pageHost"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- ─────────────────────── PAGE 1 · TIER-1 ─────────────────────── -->
+        <ScrollView android:id="@+id/pageTier1" style="@style/Page" android:visibility="gone">
+            <LinearLayout style="@style/PageInner">
+
+                <TextView style="@style/PageTitle"
+                    android:text="Get a clip in. Everything on this page writes into input/." />
+
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="Source clip"
+                        android:textColor="@color/accent" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="3"
+                        android:text="Already Tier-1 masked (grey holes where people were)? Pick masked. A normal clip with real people? Run Tier-1 - it anonymises on-device first." />
+                    <LinearLayout style="@style/BtnRow">
+                        <Button android:id="@+id/pickInputBtn" style="@style/BtnSmall"
+                            android:text="Pick masked" android:maxLines="1" />
+                        <Button android:id="@+id/quickMaskBtn" style="@style/BtnSmall"
+                            android:backgroundTint="@color/tier1"
+                            android:textColor="@color/on_accent"
+                            android:text="Run Tier-1" android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="① Tier-1 · edge anonymize"
+                        android:textColor="@color/tier1" />
+                    <TextView android:id="@+id/t1state" style="@style/StatePill"
+                        android:text="checking…" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="2" android:ellipsize="end"
+                        android:text="masked · pose sticks · canonicalizer · synthetic face. Tap a tile to play." />
+                    <ImageView android:id="@+id/t1coll" style="@style/Collage"
+                        android:contentDescription="tier-1 outputs: masked, pose, canonical, synthetic face" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="Input slots · mask + characters"
+                        android:textColor="@color/accent" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="2" android:ellipsize="end"
+                        android:text="Pick a slot, choose a file. ✓ = staged. Clearing a character also offers its alpha." />
+                    <Spinner android:id="@+id/inputSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="46dp"
+                        android:padding="6dp"
+                        android:layout_marginHorizontal="3dp"
+                        android:background="@color/surface2"
+                        android:popupBackground="@color/surface2" />
+                    <LinearLayout style="@style/BtnRow">
+                        <Button android:id="@+id/inPickBtn" style="@style/BtnGhost"
+                            android:text="Pick file" android:maxLines="1" />
+                        <Button android:id="@+id/inClearBtn" style="@style/BtnGhost"
+                            android:text="Clear" android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ─────────────────── PAGE 2 · TIER-2 (DEFAULT PAGE) ───────────────────
+             Every automation Run id lives here and nowhere else. Do not move p1run / p1brun /
+             p2run off this page without updating _e2e/uiContract.json AND drive_phone.py. -->
+        <ScrollView android:id="@+id/pageTier2" style="@style/Page">
+            <LinearLayout style="@style/PageInner">
+
+                <!-- ── pipeline state ── -->
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="Pipeline state"
+                        android:textColor="@color/compare" />
+                    <TextView android:id="@+id/readyText" style="@style/StatLine"
+                        android:text="tap Re-check" />
+                    <LinearLayout style="@style/BtnRow">
+                        <Button android:id="@+id/recheckBtn" style="@style/BtnGhost"
+                            android:text="Re-check" android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ── the one-tap path ── -->
+                <Button android:id="@+id/fullAuto" style="@style/BtnPrimary"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginHorizontal="2dp"
+                    android:text="▶  RUN FULL PIPELINE"
+                    android:maxLines="1" />
+                <TextView style="@style/PhaseHint"
+                    android:paddingTop="4dp" android:paddingHorizontal="6dp"
+                    android:maxLines="1" android:ellipsize="end"
+                    android:text="inpaint → lightmap → composite" />
+
+                <!-- ── ② Phase 1 ── -->
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="② Phase 1 · inpaint background"
+                        android:textColor="@color/phase1" />
+                    <TextView android:id="@+id/p1state" style="@style/StatePill"
+                        android:text="checking…" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="1" android:ellipsize="end"
+                        android:text="masked + mask → background, person removed" />
+                    <ImageView android:id="@+id/p1coll" style="@style/Collage"
+                        android:contentDescription="phase 1 input and output preview" />
+                    <TextView android:id="@+id/p1stat" style="@style/StatLine"
+                        android:text="not run yet" />
+                    <!-- FILL SHARPNESS (2026-08-17). Drives BackgroundInpaint.setFillSharpness:
+                         how many temporal samples are mixed per hole pixel (fewer = sharper) and how
+                         far in time the nearest-first walk may look for them. -->
+                    <TextView android:id="@+id/p1SharpLabel" style="@style/StatLine"
+                        android:text="fill sharpness" />
+                    <SeekBar android:id="@+id/p1SharpBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="40dp"
+                        android:max="200" />
+                    <TextView android:id="@+id/p1SharpHint" style="@style/PhaseHint"
+                        android:maxLines="4"
+                        android:text="0-100: 9 down to 1 temporal sample per hole pixel (fewer = less blurry, more real). 100-200: 1 sample with the search window stretched 16 to 40 frames and a bigger memory share so it fits. 50 is the only measured setting (FIX12 texture 0.835); measured on this clip, 100 took hole texture 0.78 to 0.99 of the real surround." />
+                    <!-- SEAM MATCH (2026-08-17). Drives BackgroundInpaint.setSeamMatch: how hard the
+                         fill is matched to the REAL pixels immediately around the hole. -->
+                    <TextView android:id="@+id/p1SeamLabel" style="@style/StatLine"
+                        android:text="seam match" />
+                    <SeekBar android:id="@+id/p1SeamBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="40dp"
+                        android:max="200" />
+                    <TextView android:id="@+id/p1SeamHint" style="@style/PhaseHint"
+                        android:maxLines="4"
+                        android:text="Exposure/colour fitted to a band of REAL background AROUND the hole instead of the whole frame, plus a smooth correction membrane diffused inward. 0-100 fades the membrane in over a 24px band; 100-200 tightens that band to 8px so the fit hugs the boundary. 0 = the previous whole-frame gain." />
+                    <LinearLayout style="@style/BtnRow">
+                        <Button android:id="@+id/p1set" style="@style/BtnGhost"
+                            android:text="Set masked" android:maxLines="1" />
+                        <Button android:id="@+id/p1run" style="@style/BtnSmall"
+                            android:text="Run" android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ── ②ᵇ Phase 1b ── -->
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="②ᵇ Phase 1b · lightmap"
+                        android:textColor="@color/phase1b" />
+                    <TextView android:id="@+id/p1bstate" style="@style/StatePill"
+                        android:text="checking…" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="2" android:ellipsize="end"
+                        android:text="background → illumination field, plus the silhouette-over-lightmap plate the cloud receives" />
+                    <ImageView android:id="@+id/p1bcoll" style="@style/Collage"
+                        android:contentDescription="phase 1b input and output preview" />
+                    <TextView android:id="@+id/p1bstat" style="@style/StatLine"
+                        android:text="not run yet" />
+                    <LinearLayout style="@style/BtnRow">
+                        <Button android:id="@+id/p1brun" style="@style/BtnSmall"
+                            android:text="Run lightmap" android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ── ③ Phase 2 ── -->
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="③ Phase 2 · composite characters"
+                        android:textColor="@color/phase2" />
+                    <TextView android:id="@+id/p2state" style="@style/StatePill"
+                        android:text="checking…" />
+                    <TextView android:id="@+id/p2hint" style="@style/PhaseHint"
+                        android:maxLines="2" android:ellipsize="end"
+                        android:text="characters → composite" />
+                    <ImageView android:id="@+id/p2coll" style="@style/Collage"
+                        android:contentDescription="phase 2 input and output preview" />
+                    <TextView android:id="@+id/p2stat" style="@style/StatLine"
+                        android:text="not run yet" />
+                    <CheckBox android:id="@+id/p2AlphaToggle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="40dp"
+                        android:text="also write composite_alpha (reference)"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:maxLines="1" />
+                    <CheckBox android:id="@+id/p2KeyerToggle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="40dp"
+                        android:text="allow keyer fallback (DOWNGRADE)"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:maxLines="1" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="3"
+                        android:text="OFF = the explicit synthetic_alpha_pK.mp4 is required and a missing one REFUSES the phase. ON keys instead: see-through 0.37 % → 9.57 %, 328 → 531 ms/f, §2 leak 0.000 % → 0.158 %." />
+                    <LinearLayout style="@style/BtnRow">
+                        <Button android:id="@+id/p2add" style="@style/BtnGhost"
+                            android:text="Add char" android:maxLines="1" />
+                        <Button android:id="@+id/p2run" style="@style/BtnSmall"
+                            android:text="Run" android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ─────────────────────── PAGE 3 · RESULT ─────────────────────── -->
+        <ScrollView android:id="@+id/pageResult" style="@style/Page" android:visibility="gone">
+            <LinearLayout style="@style/PageInner">
+
+                <TextView style="@style/PageTitle"
+                    android:text="Did it work? Before/after, the measurement history, and where the files are." />
+
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="✓ Compare · original vs final"
+                        android:textColor="@color/compare" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="2" android:ellipsize="end"
+                        android:text="The label names what is actually on screen - it says 'masked' when no raw original was staged." />
+                    <ImageView android:id="@+id/cmpColl" style="@style/Collage"
+                        android:contentDescription="compare original and final output" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="Measurements"
+                        android:textColor="@color/phase1" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="2" android:ellipsize="end"
+                        android:text="EVALS.md is append-only, one section per run. The tail prints into the terminal below." />
+                    <LinearLayout style="@style/BtnRow">
+                        <Button android:id="@+id/evalsBtn" style="@style/BtnGhost"
+                            android:text="Show EVALS" android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="Where things are"
+                        android:textColor="@color/text_secondary" />
+                    <TextView android:id="@+id/pathText" style="@style/StatLine"
+                        android:maxLines="5"
+                        android:text="status: (resolving…)" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ─────────────────────── PAGE 4 · TOOLS ─────────────────────── -->
+        <ScrollView android:id="@+id/pageTools" style="@style/Page" android:visibility="gone">
+            <LinearLayout style="@style/PageInner">
+
+                <TextView style="@style/PageTitle"
+                    android:text="Engine placement, permissions and destructive actions. Nothing here runs a phase." />
+
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="Verification"
+                        android:textColor="@color/text_secondary" />
+                    <CheckBox android:id="@+id/s2Toggle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="42dp"
+                        android:text="§2 leak audit (testing only)"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp"
+                        android:maxLines="1" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="3"
+                        android:text="Costs ~130 ms/frame. OFF makes EVALS report NOT AUDITED, which is honest - a 0.000 % from a run that scored zero frames is a null, not a pass." />
+                </LinearLayout>
+
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="NPU placement gates"
+                        android:textColor="@color/lime" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="3"
+                        android:text="Each compiles a context ON DEVICE and accepts it only if it passes a ground-truth gate. A rejected gate switches nothing over." />
+                    <LinearLayout style="@style/BtnRow">
+                        <Button android:id="@+id/segNpuBtn" style="@style/BtnGhost"
+                            android:text="Seg → NPU" android:maxLines="1" />
+                        <Button android:id="@+id/segNpuOffBtn" style="@style/BtnGhost"
+                            android:text="Seg → CPU" android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="Storage"
+                        android:textColor="@color/accent" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="2" android:ellipsize="end"
+                        android:text="All-Files access is required to read input/ and write output/." />
+                    <LinearLayout style="@style/BtnRow">
+                        <Button android:id="@+id/grantButton" style="@style/BtnGhost"
+                            android:text="Grant files" android:maxLines="1" />
+                        <Button android:id="@+id/outFolderButton" style="@style/BtnGhost"
+                            android:text="Out folder" android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout style="@style/PhaseCard">
+                    <TextView style="@style/PhaseTitle"
+                        android:text="Reset"
+                        android:textColor="@color/state_blocked" />
+                    <TextView style="@style/PhaseHint"
+                        android:maxLines="2" android:ellipsize="end"
+                        android:text="Deletes generated OUTPUTS only - staged inputs and Tier-1 sidecars are kept." />
+                    <LinearLayout style="@style/BtnRow">
+                        <Button android:id="@+id/resetBtn" style="@style/BtnGhost"
+                            android:text="↺ Reset outputs" android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
+    <!-- ══════════════ FIXED FOOTER (always in the tree) ══════════════ -->
+    <TextView
+        android:id="@+id/phaseLabel"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/accent" android:textSize="11sp"
+        android:fontFamily="monospace"
+        android:paddingHorizontal="12dp" android:paddingTop="4dp"
+        android:maxLines="1" android:ellipsize="end"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible" />
+
+    <!-- The log is the primary diagnostic, so it is fixed chrome and its copy/clear buttons sit on
+         its own header bar - reachable from every page without navigating. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="6dp">
+        <TextView
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="▌ terminal" android:textColor="@color/tier1" android:textSize="10sp"
+            android:fontFamily="monospace" android:maxLines="1" />
+        <Button android:id="@+id/logCopyBtn"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:minWidth="0dp" android:minHeight="34dp"
+            android:paddingHorizontal="10dp"
+            android:text="copy" android:textSize="11sp" android:maxLines="1" />
+        <Button android:id="@+id/logClearBtn"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:minWidth="0dp" android:minHeight="34dp"
+            android:paddingHorizontal="10dp"
+            android:text="clear" android:textSize="11sp" android:maxLines="1" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/logScroll"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="#05070A"
+        android:padding="6dp">
+        <TextView android:id="@+id/logText"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textSize="10sp" android:fontFamily="monospace" android:textColor="#5BE05B"
+            android:textIsSelectable="true" />
+    </ScrollView>
+</LinearLayout>

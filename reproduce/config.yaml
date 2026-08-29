@@ -1,0 +1,187 @@
+# =====================================================================================
+# MIRAGE: the pinned configuration behind every reported number, in one place.
+#
+# This file is documentation-as-data: it records the exact operating point of the shipped
+# system and, per result family, the dataset, adversary, protocol, command and expected
+# outcome. `reproduce.py` reads the "reproduction" section to run and check the
+# computational metrics. Values here mirror the implementation; if this file and the code
+# ever disagree, the code and the run's own recorded effective config win, and the
+# mismatch is a bug worth reporting.
+# =====================================================================================
+
+system:
+  paper_title: >-
+    MIRAGE: Privacy-Preserving Full-Body Identity Replacement with Consent-Based
+    Restoration for Smart Glasses
+  input_contract:
+    container: mp4 (H.264, yuv420p)
+    frame_rate_fps: 30          # the cloud graph and the phone app both assume it (30 in, 30 out)
+    resolution: read from the artifact at runtime (reported runs used 1264 x 1264)
+
+  tier1_capture:
+    detector: {model: yolo11n, confidence_threshold: 0.50, backend: "NCNN on the Pi, ONNX elsewhere"}
+    skip_interval: {n: 5, propagation: pyramidal Lucas-Kanade optical flow}
+    pose: {model: rtmpose-tiny, input: 192x256, runtime: onnxruntime-cpu, keypoints: COCO-17}
+    face: {model: mediapipe-facelandmarker-468, released_scalars: 12, dp_noise: calibrated Laplace, per-clip budget}
+    gender_flag: {model: insightface genderage (MobileNet-0.25), type: single categorical label per stream}
+    embedding: {model: edgeface_xs_gamma_06, dims: 512, input: 112x112, normalisation: L2}
+    crypto:
+      crop_jpeg_quality: 70     # rate-distortion knee; SSIM 0.9793 / PSNR 38.31 dB per crop
+      symmetric: AES-128-GCM (128-bit key, 96-bit nonce, 128-bit tag)
+      key_wrap: RSA-4096-OAEP-SHA256 to the TTP public key, fetched over HTTP(S)
+      local_keypair_generation: refused by design
+
+  tier1_anti_reidentification:      # the shipped defence, applied before egress
+    silhouette_channel:
+      released_shape: axis-aligned bounding box     # code name: mask_shape_mode=bbox
+      temporal_window_frames: 2
+      simplify_eps: 0.01
+      monotone: true              # emitted mask is a superset of the detected mask, every frame
+    pose_channel:                 # code name: preset e2, the default of gait_preset()
+      anthropometric_normalisation: canonical template, least-squares vertical-extent fit
+      seeded_global_scale_jitter_max: 0.10
+      joint_angle_perturbation_deg: {constant: 14, drift: 10, chains: arms only, legs: exempt}
+      limb_swing_amplitude_rescale: 0.25
+      per_chain_phase: {amplitude: 1.80, constant_offset_max_s: 0.35}
+      cadence_retiming: disabled
+      root_trajectory: locked to the subject's true path
+      free_end_pruning: enabled
+      confidence_binarisation_threshold: 0.5
+      seed: cryptographically fresh per clip (secrets), never identity-derived
+
+  tier2_cloud_generation:           # code name: operating point c4_van
+    generator: Wan2.2-Animate-14B (fp8 scaled), fp16_fast, SDPA attention
+    sampler: {steps: 5, cfg: 1.0, scheduler: dpm++_sde, shift: 5.0, denoise: 1.0}
+    embeds: {frame_window_size: 77, pose_strength: 0.8, face_strength: 0.85, colour_match: off}
+    lora_stack:
+      - {name: lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16, strength: 1.0}
+      - {name: Wan2.1_HighRes_Textures, strength: 0.3}
+      - {name: Wan14B_RealismBoost, strength: 0.35}
+      - {name: Wan21_Camera_Rotation, strength: 0.0}   # loaded, disabled
+    matte: SAM 2.1 hiera-base-plus over the GENERATED video, bound per person slot
+    enforcement: queue_render.py asserts sampler/LoRA/window and refuses to POST on mismatch
+
+  tier2_phone:
+    background: per-pixel temporal trimmed mean over real pixels + LaMa for the never-revealed core
+    lightmap: downsample -> Gaussian -> rescale (only pixel product allowed to the cloud)
+    compositor: explicit alpha required (MissingAlphaException otherwise)
+
+  tier3_restoration:
+    match_threshold_cosine: 0.65
+    release_scope: one bystander track, one capture interval
+    implemented_in_release: envelopes, wrapping, embedding, TTP-side unwrap/decrypt primitives
+    not_implemented_in_release: matching service, consent dispatch, scoped key release
+
+# =====================================================================================
+# Reproduction targets. `reproduce.py --run <target>` executes the commands and compares
+# the produced JSON against reproduce/expected_results.json within the stated tolerance.
+# =====================================================================================
+
+reproduction:
+  checkout:
+    description: Static verification; no models, datasets or GPU needed.
+    runtime: "~1 minute"
+    commands:
+      - python tier1/tests/test_gait_anon.py
+      - python tier1/tests/test_gait_mask_anon.py
+      - python tier1/src/edge_runner_pi5/test_config_contract.py
+      - python tier2_cloud/src/comfyui_custom_nodes/test_egress_guard.py
+
+  gait_class3:
+    description: >-
+      Unlearned gait adversary (paper Class 3) on CASIA-B: hand-crafted descriptors +
+      cosine nearest neighbour over the raw control, the quantized pose baseline and the
+      shipped pose anonymiser.
+    requires: [casia_b_pose_csvs, gaitgraph_vendor]
+    runtime: "~15-30 minutes CPU/GPU"
+    workdir: evaluation/privacy/gait
+    commands:
+      - python untrained_reid.py --configs RAW-control,qsize_m10_smooth,e2
+        --out ../reports/reid/CLASS3.json
+    output: evaluation/privacy/reports/reid/CLASS3.json
+    arm_names:                      # harness name -> paper name
+      RAW-control: Raw poses (positive control)
+      qsize_m10_smooth: Quantized pose baseline
+      e2: MIRAGE pose anonymiser
+
+  gait_class4:
+    description: >-
+      Adaptive gait adversary (paper Class 4): a ResGCN retrained from scratch on each
+      arm's protected output (SupCon, 100 epochs, 3 seeds), then scored with rank-1/5 and
+      a measured permutation null. The decisive privacy measurement, and the expensive
+      one.
+    requires: [casia_b_pose_csvs, gaitgraph_vendor, cuda_gpu]
+    runtime: "~30-40 min per config per seed on an RTX 4060; 9 trainings total"
+    workdir: evaluation/privacy/gait
+    commands:
+      - python tm3_retrain.py --config RAW-control      --epochs 100 --seeds 0,1,2 --tag repro
+      - python tm3_retrain.py --config qsize_m10_smooth --epochs 100 --seeds 0,1,2 --tag repro
+      - python tm3_retrain.py --config e2               --epochs 100 --seeds 0,1,2 --tag repro
+      - python score_class4.py --configs RAW-control,qsize_m10_smooth,e2 --tag repro --seeds 0,1,2
+    output: evaluation/privacy/reports/reid/CLASS4.json
+    notes: >-
+      Retraining is stochastic; expected values carry the published seed spread and the
+      comparison tolerance accounts for it. The frozen-adversary gate
+      (reproduce_baseline.py) should pass before believing anything here.
+
+  appearance_class12:
+    description: >-
+      Appearance adversaries (paper Classes 1 and 2) on the capture corpus: GEI + nearest
+      neighbour, and the frozen GaitBase checkpoint, against the raw control, MIRAGE's
+      released bounding-box mask, and the DeepPrivacy2 baseline.
+    requires: [evaluation_dataset, gaitbase_checkpoint, cuda_gpu, dp2_container_optional]
+    runtime: "extraction ~2-4 h (CPU pose dominates; --no-pose for silhouette-only), scoring ~10 min"
+    workdir: evaluation/privacy/appearance
+    commands:
+      - python make_corpus_manifest.py --dataset-root <reid_dataset_flat>
+      - python extract_arm.py --arm raw --dataset-root <reid_dataset_flat> --video-dir corpus_10fps --also-mirage
+      - python extract_arm.py --arm dp2 --dataset-root <reid_dataset_flat> --video-dir baselines_dp2/out --no-pose
+      - python class12_silhouette.py --arms raw,mirage,dp2 --reps 40
+    output: evaluation/privacy/appearance/reports/CLASS12.json
+    notes: >-
+      The evaluation dataset shows real people and is distributed separately from this
+      code repository; reproduce.py checks for it and reports what is missing rather
+      than failing opaquely.
+
+  visual_utility:
+    description: >-
+      Visual utility of the protected output against the unanonymised generation baseline
+      (SSIM, PSNR, LPIPS, keypoint distance, expression MAE, FID).
+    requires: [evaluation_dataset, rendered_outputs, cuda_gpu]
+    runtime: minutes per clip once the renders exist
+    manual: true
+    commands:
+      - python evaluation/quality/eval_tier2_visual_utility.py --help
+      - python evaluation/quality/eval_fid_pooled.py --gen <final_output.mp4> --real-glob '<clips>/*.mp4'
+    notes: >-
+      Requires re-rendering both arms on the same clips with the same seeds (matched
+      settings, post-processing disabled in both). Numbers are comparable only within one
+      measurement configuration; reproduce.py treats this target as guided-manual.
+
+  system_cost:
+    description: Pi 5 energy/latency, phone energy/thermal, storage overhead.
+    requires: [raspberry_pi_5, galaxy_s25_ultra, shunt_power_rig]
+    manual: true
+    commands:
+      - python evaluation/performance/pi_bench/bench_tier1_pi.py
+      - python evaluation/performance/phone_battery_report.py
+      - python evaluation/performance/phone_thermal.py
+    notes: Hardware-bound; expected values are reference points, not gates.
+
+datasets:
+  casia_b_pose_csvs:
+    what: CASIA-B COCO-17 pose CSVs (via the GaitGraph release)
+    setup: docs/reproduction.md "Dataset setup"
+    check: evaluation/privacy/gait/data/casia-b_pose_test.csv
+  gaitgraph_vendor:
+    what: GaitGraph / GaitGraph2 source checkouts
+    check: evaluation/privacy/gait/vendor/GaitGraph/src
+  gaitbase_checkpoint:
+    what: OpenGait GaitBase_DA CASIA-B checkpoint
+    check: evaluation/privacy/silhouette/data/CASIA-B/Baseline/GaitBase_DA/checkpoints/GaitBase_DA-60000.pt
+  evaluation_dataset:
+    what: >-
+      The smart-glasses evaluation dataset (the capture corpus with its FLAT_MANIFEST.csv
+      and _annotations/fullbody). It shows real people and is distributed separately from
+      this code repository.
+    check: <supplied via --dataset-root>

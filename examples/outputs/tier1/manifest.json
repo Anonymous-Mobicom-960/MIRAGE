@@ -1,0 +1,320 @@
+{
+ "clip_id": "46f59519-f00d-4eb3-a7b2-33fb3a9af901",
+ "fps": 10.0,
+ "width": 1264,
+ "height": 1264,
+ "num_slots": 1,
+ "total_frames": 100,
+ "slots": [
+  {
+   "slot": 0,
+   "stream_id": "49be428a-41ff-4c99-8562-d2ccef791aa6",
+   "face_smile_baseline": 0.02659747004508972,
+   "frames_with_face": 100,
+   "gender": "Male",
+   "gender_confidence": 0.9823895564844156,
+   "packet_file": "crypto/stream_49be428a-41ff-4c99-8562-d2ccef791aa6.packet",
+   "key_file": "crypto/stream_49be428a-41ff-4c99-8562-d2ccef791aa6.key",
+   "stick_ink_containment": {
+    "frames_measured": 100,
+    "mean": 0.972225,
+    "min": 0.889513,
+    "zero_containment_frames": 0,
+    "frames_slot_absent": 0,
+    "frames_no_drawable_ink": 0,
+    "ink_conf_thresh": 0.5,
+    "measured_at": "256x256 px (emitted mask, downscaled)",
+    "note": "fraction of the drawn COCO-17 skeleton's pixels lying inside the EMITTED (post-mitigation) mask; ink outside the frame counts as outside. Frames where the slot was absent, or where no link had both endpoints at/above ink_conf_thresh, are excluded from mean/min and counted separately."
+   }
+  }
+ ],
+ "anon": {
+  "enabled": true,
+  "preset": "e2",
+  "preset_is_shipped_default": true,
+  "shipped_preset": "e2",
+  "preset_keys_raw": 9,
+  "level": "L4",
+  "fps": 10.0,
+  "anonymize_v2_kwargs": {
+   "cadence_amp": 0.0,
+   "angle_const_deg": 14,
+   "angle_drift_deg": 10,
+   "asymmetry_sigma": 0.12,
+   "lowfreq_amp_frac": 0.0,
+   "angle_groups": [
+    "uarm",
+    "farm"
+   ],
+   "projection_fit": true,
+   "limb_phase_amp": 1.8,
+   "cadence_root_lock": true,
+   "seeded_global_scale_max": 0.1,
+   "limb_swing_amp": 0.25,
+   "limb_phase_offset_s": 0.35
+  },
+  "anonymize_v2_kwargs_n": 12,
+  "wrapper_knobs": {
+   "scale_from": "extent"
+  },
+  "call_site_kwargs": {
+   "do_canon": true,
+   "center_root": false,
+   "fps": 10.0,
+   "head_anchor": "off"
+  },
+  "seconds_knobs_at_fps": {
+   "cadence_period_s": {
+    "seconds": 0.7,
+    "frames": 7.0,
+    "kind": "period",
+    "semantics": "gait-band period of the cadence warp",
+    "gated_by": "cadence_amp",
+    "gate_value": 0.0,
+    "active": false
+   },
+   "limb_phase_offset_s": {
+    "seconds": 0.35,
+    "frames": 3.5,
+    "kind": "bound",
+    "semantics": "per-chain constant time shift, drawn U[-v, +v] s per SEQUENCE",
+    "gated_by": "limb_phase_offset_s",
+    "gate_value": 0.35,
+    "active": true,
+    "applied_frames": "drawn within +/-3.5"
+   },
+   "limb_phase_period_s": {
+    "seconds": 0.7,
+    "frames": 7.0,
+    "kind": "period",
+    "semantics": "period of the per-limb phase warp",
+    "gated_by": "limb_phase_amp",
+    "gate_value": 1.8,
+    "active": true
+   },
+   "lowfreq_period_s": {
+    "seconds": 1.2,
+    "frames": 12.0,
+    "kind": "period",
+    "semantics": "period of the positional drift",
+    "gated_by": "lowfreq_amp_frac",
+    "gate_value": 0.0,
+    "active": false
+   },
+   "pose_smooth_max_s": {
+    "seconds": 0.0,
+    "frames": 0.0,
+    "kind": "bound",
+    "semantics": "temporal low-pass sigma, drawn U[0, v] s per SEQUENCE",
+    "gated_by": "pose_smooth_max_s",
+    "gate_value": 0.0,
+    "active": false,
+    "applied_frames": "drawn within [0, 0]"
+   },
+   "root_speed_period_s": {
+    "seconds": 2.5,
+    "frames": 25.0,
+    "kind": "period",
+    "semantics": "period of the walking-speed modulation",
+    "gated_by": "root_speed_amp",
+    "gate_value": 0.0,
+    "active": false
+   }
+  },
+  "levels_source": "vendored LEVELS[L4] after import-time env overrides",
+  "head_anchor_on": false,
+  "runtime": {
+   "defence": "gait",
+   "vendored_module": "<input>/pose_anon_edge.py",
+   "preset": "e2",
+   "preset_source": "argument",
+   "level": "L4",
+   "fps": 10.0,
+   "frame_wh": [
+    1264,
+    1264
+   ],
+   "n_slots": 1,
+   "n_frames": 100,
+   "conf_thresh": 0.5,
+   "min_present_frames": 4,
+   "min_present_frac": 0.0,
+   "max_coord_mult": 4.0,
+   "level_knobs": {
+    "cadence_amp": 0.6,
+    "angle_const_deg": 14,
+    "angle_drift_deg": 10,
+    "asymmetry_sigma": 0.12,
+    "lowfreq_amp_frac": 0.0
+   },
+   "preset_kwargs": {
+    "angle_groups": [
+     "uarm",
+     "farm"
+    ],
+    "projection_fit": true,
+    "limb_phase_amp": 1.8,
+    "cadence_amp": 0.0,
+    "scale_from": "extent",
+    "cadence_root_lock": true,
+    "seeded_global_scale_max": 0.1,
+    "limb_swing_amp": 0.25,
+    "limb_phase_offset_s": 0.35
+   },
+   "anonymize_v2_kwargs": {
+    "cadence_amp": 0.0,
+    "angle_const_deg": 14,
+    "angle_drift_deg": 10,
+    "asymmetry_sigma": 0.12,
+    "lowfreq_amp_frac": 0.0,
+    "angle_groups": [
+     "uarm",
+     "farm"
+    ],
+    "projection_fit": true,
+    "limb_phase_amp": 1.8,
+    "cadence_root_lock": true,
+    "seeded_global_scale_max": 0.1,
+    "limb_swing_amp": 0.25,
+    "limb_phase_offset_s": 0.35
+   },
+   "collapse_target_kwargs": {
+    "scale_from": "extent"
+   },
+   "seed_source": "vendored_new_clip_seed_per_sequence",
+   "deterministic_seed": false,
+   "provenance_globals": {
+    "template_kinds": "pose_anon_edge._TEMPLATE_KIND_USED",
+    "stature_scales": "pose_anon_edge._STATURE_SCALE_USED"
+   },
+   "on_degenerate": "raise",
+   "per_slot_present_frames": [
+    100
+   ],
+   "per_slot_absent_frames": [
+    0
+   ],
+   "per_slot_low_confidence_frames": [
+    0
+   ],
+   "sequences": [
+    {
+     "seq_id": 0,
+     "slot": 0,
+     "identity": 0,
+     "n_present": 100,
+     "first_frame": 0,
+     "last_frame": 99,
+     "n_gaps": 0,
+     "max_gap_frames": 0,
+     "min_group_len_px": 58.5382,
+     "group_lengths_px": {
+      "clav": 180.2937,
+      "face": 58.5382,
+      "farm": 144.9985,
+      "hip": 110.356,
+      "neck": 257.6941,
+      "shin": 90.9303,
+      "spine": 426.5521,
+      "thigh": 96.7201,
+      "uarm": 339.5116
+     },
+     "canvas_clipped_joints": 539,
+     "canvas_clipped_joints_confident": 47,
+     "input_joints_on_frame_edge_confident": 117,
+     "subject_cut_off_by_framing": true,
+     "canvas_clipped_frac": 0.317059,
+     "canvas_clipped_frac_confident": 0.027647
+    }
+   ],
+   "skipped": [],
+   "transformed_frames": 100,
+   "raw_passthrough_frames": 0,
+   "raw_passthrough_breakdown": {
+    "low_confidence_rows": 0,
+    "short_sequences": 0,
+    "degenerate_sequences": 0
+   },
+   "calls_to_anonymize_pose_log": 1,
+   "applied": true,
+   "output_bound_effective": false,
+   "output_bound_note": "coordinate sanity bound is DEAD: frame_wh was passed, so the vendored code clipped to the canvas (pose_anon_edge.py:2426) before this adapter saw the result. `degenerate_groups_checked` is the guard that held.",
+   "degenerate_groups_checked": 1,
+   "env_snapshot": {
+    "MIRAGE_GAIT_PRESET": "e2",
+    "MIRAGE_POSE_SCALE_FROM": null,
+    "MIRAGE_HEIGHT_MULT": null,
+    "MIRAGE_ARM_MULT": null,
+    "MIRAGE_LEG_MULT": null,
+    "MIRAGE_NECK_MULT": null,
+    "MIRAGE_STATURE_RATIO": null,
+    "MIRAGE_HEIGHT_ANCHOR": null,
+    "MIRAGE_HEAD_ANCHOR": null,
+    "MIRAGE_ANATOMICAL_TEMPLATE": null,
+    "MIRAGE_RESTORE_TORSO_ROLL": null,
+    "MIRAGE_LOWFREQ_AMP": null,
+    "MIRAGE_ANGLE_CONST": null,
+    "MIRAGE_ANGLE_DRIFT": null,
+    "MIRAGE_CADENCE_AMP": null,
+    "MIRAGE_CADENCE_PERIOD_S": null,
+    "MIRAGE_ASYM_SIGMA": null,
+    "MIRAGE_LR_ASYM_SIGMA": null,
+    "MIRAGE_LIMB_PHASE_AMP": null,
+    "MIRAGE_LIMB_PHASE_PERIOD_S": null,
+    "MIRAGE_TEST_FIXED_SEED_set": false
+   },
+   "template_kinds": [
+    "anatomical_extent"
+   ],
+   "stature_scales": [],
+   "canvas_clipped_joints": 539,
+   "canvas_clipped_joints_confident": 47,
+   "input_joints_on_frame_edge_confident": 117,
+   "min_group_len_px_over_sequences": 58.5382,
+   "canvas_clip_note": "joints whose INPUT was strictly inside frame_wh but whose emitted position sits exactly on a canvas edge, i.e. placed by the vendored clip (pose_anon_edge.py:2426) rather than by the transform. 0 on a clean sequence. A NON-ZERO count with a small `min_group_len_px` is the bone-length amplification signature that the median<=0 degeneracy guard cannot see -- see gait_anon._degenerate_groups for the measured table. Reported, never raised: a subject genuinely walking off the frame edge also produces some of these."
+  }
+ },
+ "mask": {
+  "enabled": true,
+  "shape_mode": "bbox",
+  "temporal_win": 2,
+  "mask_fps": 10.0,
+  "temporal_win_s": 0.2,
+  "edge_expand_px": 1,
+  "edge_expand_kernel": "MORPH_ELLIPSE 3x3",
+  "simplify_eps": 0.01,
+  "bbox_merge": true,
+  "bbox_pad_frac": 0.0,
+  "route": "segmentation backend + MIRAGE bbox",
+  "order": [
+   "binarize",
+   "edge_expand_dilate",
+   "ring_buffer_append",
+   "mask_mitigate"
+  ],
+  "measured_arm_note": "\u00a7A.6o measured `bbox` THROUGH mask_mitigate at temporal win=2 on the MIRAGE host. The rectangle alone is not the measured arm, and no \u00a7A.6 number describes THIS host.",
+  "runtime": {
+   "frames": 100,
+   "frames_none_as_empty": 0,
+   "frames_none_skipped_no_shape": 0,
+   "frames_empty_input": 0,
+   "window_resets": 0,
+   "s2_superset_violations": 0,
+   "s2_superset_violation_px": 0,
+   "s2_superset_violations_vs_dilated": 0,
+   "area_in_px": 31612328,
+   "area_out_px": 46941672,
+   "area_ratio_mean": 1.48063600165364,
+   "shape_mode": "bbox",
+   "temporal_win": 2,
+   "edge_expand_px": 1,
+   "simplify_eps": 0.01,
+   "bbox_merge": true,
+   "bbox_pad_frac": 0.0,
+   "seed_supplied_by_caller": false,
+   "host_superset_violation_frames": 0,
+   "host_superset_violation_px": 0
+  },
+  "superset_violations": 0
+ }
+}
